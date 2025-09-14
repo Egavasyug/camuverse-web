@@ -1,30 +1,59 @@
-﻿'use client'
+﻿"use client"
 
-import '@rainbow-me/rainbowkit/styles.css'
-import { getDefaultConfig, RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit'
-import { WagmiProvider } from 'wagmi'
-import { base } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiProvider, cookieStorage, createStorage, createConfig, http } from 'wagmi'
+import { base } from 'wagmi/chains'
+import { createAppKit } from '@reown/appkit'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo'
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
-export const config = getDefaultConfig({
-  appName: 'Camuverse',
-  projectId,
-  chains: [base],
-  ssr: true,
-})
+if (!projectId) {
+  const msg = 'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set.'
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(msg)
+  } else {
+    console.warn(msg + ' Set it in .env.local for local development.')
+  }
+}
+
+const wagmiAdapter = projectId
+  ? new WagmiAdapter({
+      projectId,
+      networks: [base],
+      ssr: true,
+      storage: createStorage({ storage: cookieStorage })
+    })
+  : null
+
+export const config = wagmiAdapter
+  ? wagmiAdapter.wagmiConfig
+  : createConfig({
+      chains: [base],
+      transports: { [base.id]: http() },
+      ssr: true,
+      storage: createStorage({ storage: cookieStorage })
+    })
+
+if (typeof window !== 'undefined' && projectId && wagmiAdapter) {
+  createAppKit({
+    networks: [base],
+    adapters: [wagmiAdapter],
+    projectId,
+    features: {
+      email: true,
+      socials: ['google'],
+      onramp: true
+    }
+  })
+}
 
 const queryClient = new QueryClient()
 
 export function Web3Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={lightTheme({ accentColor: '#2563eb' })}>
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )
 }
