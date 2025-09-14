@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const csp = [
   "default-src 'self'",
-  // Allow eval temporarily to unblock; tighten later
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https:",
+  // No eval or inline scripts
+  "script-src 'self' blob: https:",
   "style-src 'self' 'unsafe-inline' https:",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
