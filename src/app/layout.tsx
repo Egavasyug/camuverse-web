@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
+import logoPng from '../../public/logo.png'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Providers>
           <header className="flex items-center gap-3 p-4 border-b border-gray-200">
-            <Image src="/logo.png" alt="Camuverse" width={32} height={32} priority />
+            <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
             <span className="font-semibold">Camuverse</span>
           </header>
           <main>
