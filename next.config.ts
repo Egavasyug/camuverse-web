@@ -1,28 +1,21 @@
 import type { NextConfig } from "next";
 
-const csp = [
-  "default-src 'self'",
-  // No eval or inline scripts
-  "script-src 'self' blob: https:",
-  "style-src 'self' 'unsafe-inline' https:",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data: https:",
-  "connect-src 'self' https: wss: data: blob:",
-  "frame-src 'self' https:",
-  "base-uri 'self'",
-  "form-action 'self'"
-].join('; ')
-
 const nextConfig: NextConfig = {
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          { key: 'Content-Security-Policy', value: csp }
-        ]
-      }
+  webpack: (config) => {
+    config.resolve = config.resolve || {}
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      'pino-pretty': false,
+      'pino-abstract-transport': false,
+      'sonic-boom': false
+    }
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      /pino-pretty/,
+      /pino-abstract-transport/,
+      /sonic-boom/
     ]
+    return config
   }
 };
 
