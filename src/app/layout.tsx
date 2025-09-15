@@ -18,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Camuverse",
   description: "Camuverse frontend",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png"
+  }
 };
 
 export default function RootLayout({
