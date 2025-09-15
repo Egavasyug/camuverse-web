@@ -1,6 +1,6 @@
 /* AppKit web components typings */
 declare namespace JSX {
   interface IntrinsicElements {
-    'appkit-button': any
+    'appkit-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
   }
 }
