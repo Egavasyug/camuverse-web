@@ -35,7 +35,15 @@ export const config = wagmiAdapter
       storage: createStorage({ storage: cookieStorage })
     })
 
-if (typeof window !== 'undefined' && projectId && wagmiAdapter) {
+declare global {
+  // eslint-disable-next-line no-var
+  var __appkit_inited__: boolean | undefined
+}
+
+if (typeof window !== 'undefined' && projectId && wagmiAdapter && !globalThis.__appkit_inited__) {
+  // Ensure AppKit is initialized exactly once to avoid transient config warnings
+  globalThis.__appkit_inited__ = true
+  const origin = window.location.origin
   createAppKit({
     networks: [base],
     adapters: [wagmiAdapter],
@@ -43,8 +51,8 @@ if (typeof window !== 'undefined' && projectId && wagmiAdapter) {
     metadata: {
       name: 'Camuverse',
       description: 'Camuverse frontend',
-      url: typeof window !== 'undefined' ? window.location.origin : 'https://camuverse.io',
-      icons: ['https://camuverse.io/logo.png']
+      url: origin,
+      icons: [origin + '/logo.png']
     }
   })
 }
