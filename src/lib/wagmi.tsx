@@ -48,6 +48,11 @@ if (typeof window !== 'undefined' && projectId && wagmiAdapter && !globalThis.__
     networks: [base],
     adapters: [wagmiAdapter],
     projectId,
+    features: {
+      email: false,
+      socials: [],
+      onramp: false
+    },
     metadata: {
       name: 'Camuverse',
       description: 'Camuverse frontend',
