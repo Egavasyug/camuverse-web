@@ -40,10 +40,11 @@ if (typeof window !== 'undefined' && projectId && wagmiAdapter) {
     networks: [base],
     adapters: [wagmiAdapter],
     projectId,
-    features: {
-      email: true,
-      socials: ['google'],
-      onramp: true
+    metadata: {
+      name: 'Camuverse',
+      description: 'Camuverse frontend',
+      url: typeof window !== 'undefined' ? window.location.origin : 'https://camuverse.io',
+      icons: ['https://camuverse.io/logo.png']
     }
   })
 }
