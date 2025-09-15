@@ -2,10 +2,12 @@
 
 import type { Abi } from "viem"
 import { useEffect, useState } from "react"
+import type React from 'react'
 import { loadManifest, type Manifest } from "@/lib/manifest"
 import { useAccount, useReadContract } from "wagmi"
 
 type Cfg = { address: `0x${string}`; abi: Abi }
+const AppKitButton = 'appkit-button' as unknown as React.ComponentType<React.HTMLAttributes<HTMLElement>>
 
 export default function Home() {
   const [manifest, setManifest] = useState<Manifest | null>(null)
@@ -15,7 +17,7 @@ export default function Home() {
     <main className="min-h-dvh p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Camuverse</h1>
-        <appkit-button />
+        <AppKitButton />
       </div>
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
     </main>
