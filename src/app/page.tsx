@@ -2,7 +2,6 @@
 
 import type { Abi } from "viem"
 import { useEffect, useState } from "react"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { loadManifest, type Manifest } from "@/lib/manifest"
 import { useAccount, useReadContract } from "wagmi"
 
@@ -16,7 +15,7 @@ export default function Home() {
     <main className="min-h-dvh p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Camuverse</h1>
-        <ConnectButton />
+        <appkit-button />
       </div>
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
     </main>
