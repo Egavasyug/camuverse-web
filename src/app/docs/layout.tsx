@@ -4,7 +4,9 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
   const nav = [
     { href: '/docs', label: 'Overview' },
     { href: '/docs/governance', label: 'Governance' },
-    { href: '/docs/ecosystem', label: 'Ecosystem' }
+    { href: '/docs/ecosystem', label: 'Ecosystem' },
+    { href: '/docs/slides', label: 'Slides' },
+    { href: '/docs/pdf', label: 'PDF' }
   ]
   return (
     <div className="md:flex min-h-[calc(100dvh-57px)]">
