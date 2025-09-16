@@ -35,8 +35,10 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Providers>
           <header className="flex items-center gap-3 p-4 border-b border-gray-200">
-            <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
-            <span className="font-semibold">Camuverse</span>
+            <Link href="/" aria-label="Go to home">
+              <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
+            </Link>
+            <Link href="/" className="font-semibold hover:underline" aria-label="Camuverse home">Camuverse</Link>
             <nav className="ml-auto">
               <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Cammunity DAO LLC Whitepaper</Link>
             </nav>
