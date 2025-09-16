@@ -38,7 +38,7 @@ export default function RootLayout({
             <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
             <span className="font-semibold">Camuverse</span>
             <nav className="ml-auto">
-              <Link href="/docs" className="text-sm text-blue-600 hover:underline">Docs</Link>
+              <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Cammunity DAO LLC Whitepaper</Link>
             </nav>
           </header>
           <main>
