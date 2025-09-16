@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
+import Link from 'next/link'
 import logoPng from '../../public/logo.png'
 
 const geistSans = Geist({
@@ -18,6 +19,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Camuverse",
   description: "Camuverse frontend",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png"
+  }
 };
 
 export default function RootLayout({
@@ -32,6 +37,9 @@ export default function RootLayout({
           <header className="flex items-center gap-3 p-4 border-b border-gray-200">
             <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
             <span className="font-semibold">Camuverse</span>
+            <nav className="ml-auto">
+              <Link href="/docs" className="text-sm text-blue-600 hover:underline">Docs</Link>
+            </nav>
           </header>
           <main>
             {children}
@@ -41,3 +49,4 @@ export default function RootLayout({
     </html>
   );
 }
+
