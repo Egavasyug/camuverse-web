@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
 
 const nextConfig: NextConfig = {
+  experimental: { mdxRs: true },
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   webpack: (config) => {
     config.resolve = config.resolve || {}
