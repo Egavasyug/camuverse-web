@@ -140,7 +140,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
       </div>
       <div className="text-sm flex items-center gap-3 flex-wrap">
         <span>Status: {address ? (hasBadge ? 'Claimed' : 'Not claimed') : 'Connect wallet'}</span>
-        {address && hasBadge && (
+        {address && hasBadge === true && (
           <span>Subscriber #: {Number(subNo || 0) > 0 ? String(subNo) : '-'}</span>
         )}
         {address && hasBadge === false && (
@@ -180,9 +180,9 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                     const n = Number((r as any)?.data ?? subNo ?? 0)
                     if (n > 0) setToast(`Claim successful - Subscriber #${n}`)
                   } else {
-                    const txHash = await writeContract({ address: sbt.address, abi: sbt.abi, functionName: 'claim', args: [tokenUri] })
-                    if (txHash && publicClient) {
-                      await publicClient.waitForTransactionReceipt({ hash: txHash as `0x${string}` })
+                    const txHash = (await writeContract({ address: sbt.address, abi: sbt.abi, functionName: 'claim', args: [tokenUri] } as any) as unknown) as `0x${string}`
+                    if (publicClient) {
+                      await publicClient.waitForTransactionReceipt({ hash: txHash })
                     }
                     await refetch?.()
                     const r2 = await refetchSub?.()

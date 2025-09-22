@@ -35,11 +35,11 @@ export async function buildClaimForwardRequest(opts: {
   gas?: bigint
 }): Promise<{ request: ForwardRequest; domain: { name: 'MinimalForwarder'; version: '0.0.1'; chainId: number; verifyingContract: `0x${string}` }; types: typeof forwarderTypes }> {
   const { account, tokenUri, sbtAddress, sbtAbi, forwarder, chainId, publicClient } = opts
-  const gas = opts.gas ?? 200000n
+  const gas = opts.gas ?? BigInt(200000)
   const nonce = await publicClient.readContract({ address: forwarder, abi: minimalForwarderAbi, functionName: 'getNonce', args: [account] }) as bigint
   const data = encodeFunctionData({ abi: sbtAbi, functionName: 'claim', args: [tokenUri] })
-  const request: ForwardRequest = { from: account, to: sbtAddress, value: 0n, gas, nonce, data }
-  const domain = { name: 'MinimalForwarder', version: '0.0.1', chainId, verifyingContract: forwarder }
+  const request: ForwardRequest = { from: account, to: sbtAddress, value: BigInt(0), gas, nonce, data }
+  const domain = { name: 'MinimalForwarder', version: '0.0.1', chainId, verifyingContract: forwarder } as const
   const types = forwarderTypes
   return { request, domain, types }
 }

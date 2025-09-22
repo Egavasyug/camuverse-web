@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createPublicClient, createWalletClient, http, decodeEventLog, type Hex } from 'viem'
+import { base } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 import { supabaseAdmin } from '@/lib/supabaseServer'
 
@@ -103,8 +104,8 @@ export async function POST(request: Request) {
 
     const account = privateKeyToAccount(RELAYER_PRIVATE_KEY)
     const transport = http(RELAY_RPC_URL)
-    const publicClient = createPublicClient({ transport })
-    const walletClient = createWalletClient({ account, transport })
+    const publicClient = createPublicClient({ chain: base, transport })
+    const walletClient = createWalletClient({ account, chain: base, transport })
 
     const reqNormalized = normalizeRequest(forwardReq as IncomingForwardRequest)
     // Execute via forwarder
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
       abi: forwarderAbi,
       functionName: 'execute',
       args: [reqNormalized, signature as Hex],
-      value: 0n
+      value: BigInt(0)
     })
 
     const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash })
