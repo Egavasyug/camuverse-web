@@ -4,6 +4,7 @@ import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
+import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
 const geistSans = Geist({
@@ -35,10 +36,13 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Providers>
           <header className="flex items-center gap-3 p-4 border-b border-gray-200">
-            <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
-            <span className="font-semibold">Camuverse</span>
-            <nav className="ml-auto">
-              <Link href="/docs" className="text-sm text-blue-600 hover:underline">Docs</Link>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
+              <span className="font-semibold hover:underline">Camuverse</span>
+            </Link>
+            <nav className="ml-auto flex items-center gap-4">
+              <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Cammunity DAO LLC Whitepaper</Link>
+              <WaitlistControl />
             </nav>
           </header>
           <main>
