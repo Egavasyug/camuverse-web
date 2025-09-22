@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
 
 const nextConfig: NextConfig = {
-  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+  // Temporarily disable MD/MDX pages to unblock build; will re-enable after MDX runtime fix
+  pageExtensions: ['ts', 'tsx'],
   webpack: (config) => {
     config.resolve = config.resolve || {}
     config.resolve.alias = {
@@ -21,8 +22,5 @@ const nextConfig: NextConfig = {
   }
 };
 
-const withMDX = createMDX({
-  extension: /\.mdx?$/
-});
-
-export default withMDX(nextConfig);
+// MDX disabled for now
+export default nextConfig;
