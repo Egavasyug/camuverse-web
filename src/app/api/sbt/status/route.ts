@@ -1,12 +1,17 @@
 import { NextRequest } from 'next/server'
-import { createPublicClient, http, isAddress, getAddress } from 'viem'
+import { createPublicClient, http, isAddress, getAddress, type Abi } from 'viem'
 import { base } from 'viem/chains'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+type ManifestContracts = {
+  EarlyAccessSBT?: { address: `0x${string}`; abi: Abi }
+  [key: string]: { address: `0x${string}`; abi: Abi } | undefined
+}
+
 type Manifest = {
   chainId: number
-  contracts: Record<string, { address: `0x${string}`; abi: any }>
+  contracts: ManifestContracts
 }
 
 async function loadManifest(): Promise<Manifest> {
@@ -22,7 +27,7 @@ export async function GET(req: NextRequest) {
   const checksum = getAddress(wallet)
 
   const manifest = await loadManifest()
-  const sbt = (manifest.contracts as any).EarlyAccessSBT as { address: `0x${string}`; abi: any } | undefined
+  const sbt = manifest.contracts.EarlyAccessSBT
   if (!sbt || /^0x0{40}$/i.test(sbt.address)) {
     return Response.json({ hasBadge: false, reason: 'SBT not configured' })
   }
@@ -33,12 +38,13 @@ export async function GET(req: NextRequest) {
     const hasBadge = await client.readContract({
       address: sbt.address,
       abi: sbt.abi,
-      functionName: 'hasClaimed' as any,
+      functionName: 'hasClaimed',
       args: [checksum],
     }) as boolean
     return Response.json({ hasBadge, contract: sbt.address, chainId: manifest.chainId })
-  } catch (e: any) {
-    return new Response(e?.message || 'Read failed', { status: 500 })
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Read failed'
+    return new Response(msg, { status: 500 })
   }
 }
 

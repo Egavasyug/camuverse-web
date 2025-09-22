@@ -1,4 +1,4 @@
-import { encodeFunctionData, type Abi, type Hex } from 'viem'
+import { encodeFunctionData, type Abi, type Hex, type PublicClient } from 'viem'
 
 export type ForwardRequest = {
   from: `0x${string}`
@@ -31,9 +31,9 @@ export async function buildClaimForwardRequest(opts: {
   sbtAbi: Abi
   forwarder: `0x${string}`
   chainId: number
-  publicClient: any
+  publicClient: PublicClient
   gas?: bigint
-}): Promise<{ request: ForwardRequest; domain: any; types: any }> {
+}): Promise<{ request: ForwardRequest; domain: { name: 'MinimalForwarder'; version: '0.0.1'; chainId: number; verifyingContract: `0x${string}` }; types: typeof forwarderTypes }> {
   const { account, tokenUri, sbtAddress, sbtAbi, forwarder, chainId, publicClient } = opts
   const gas = opts.gas ?? 200000n
   const nonce = await publicClient.readContract({ address: forwarder, abi: minimalForwarderAbi, functionName: 'getNonce', args: [account] }) as bigint

@@ -62,14 +62,23 @@ function toBigIntLike(v: string | number | bigint): bigint {
   return s.startsWith('0x') ? BigInt(s) : BigInt(s)
 }
 
-function normalizeRequest(req: IncomingForwardRequest) {
+type NormalizedForwardRequest = {
+  from: `0x${string}`
+  to: `0x${string}`
+  value: bigint
+  gas: bigint
+  nonce: bigint
+  data: Hex
+}
+
+function normalizeRequest(req: IncomingForwardRequest): NormalizedForwardRequest {
   return {
     from: req.from,
     to: req.to,
     value: toBigIntLike(req.value),
     gas: toBigIntLike(req.gas),
     nonce: toBigIntLike(req.nonce),
-    data: req.data
+    data: req.data,
   }
 }
 
@@ -103,7 +112,7 @@ export async function POST(request: Request) {
       address: FORWARDER_ADDRESS,
       abi: forwarderAbi,
       functionName: 'execute',
-      args: [reqNormalized as any, signature as Hex],
+      args: [reqNormalized, signature as Hex],
       value: 0n
     })
 
@@ -112,17 +121,18 @@ export async function POST(request: Request) {
 
     // Try to decode ERC721 Transfer from the SBT contract to extract tokenId
     const sbt = (reqNormalized.to as string).toLowerCase()
+    type TransferArgs = { from: `0x${string}`; to: `0x${string}`; tokenId: bigint }
     let tokenId: string | null = null
     for (const log of receipt.logs) {
       if (log.address.toLowerCase() !== sbt) continue
       try {
         const decoded = decodeEventLog({ abi: erc721Events, data: log.data, topics: log.topics })
         if (decoded.eventName === 'Transfer') {
-          const tid = (decoded.args as any).tokenId as bigint
+          const tid = (decoded.args as TransferArgs).tokenId
           tokenId = tid?.toString() ?? null
           break
         }
-      } catch (_) {
+      } catch {
         // ignore non-matching logs
       }
     }
@@ -142,11 +152,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true, hash: txHash, tokenId, blockNumber: Number(receipt.blockNumber), chainId })
-  } catch (e: any) {
-    // eslint-disable-next-line no-console
+  } catch (e: unknown) {
     console.error('relay/claim error', e)
-    const msg = typeof e?.message === 'string' ? e.message : 'Relay failed'
+    const msg = e instanceof Error ? e.message : 'Relay failed'
     return NextResponse.json({ ok: false, error: msg }, { status: 500 })
   }
 }
+
 
