@@ -5,6 +5,7 @@ import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
 import logoPng from '../../public/logo.png'
+import { Analytics } from '@vercel/analytics/next'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default function RootLayout({
             {children}
           </main>
         </Web3Providers>
+        <Analytics />
       </body>
     </html>
   );
