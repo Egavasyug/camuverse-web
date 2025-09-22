@@ -1,10 +1,12 @@
 "use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Abi } from "viem"
 import { useEffect, useMemo, useState } from "react"
 import type React from 'react'
+import Link from 'next/link'
 import { loadManifest, type Manifest } from "@/lib/manifest"
-import { useAccount, useReadContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
+import { useAccount, useReadContract, useWriteContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
 import { buildClaimForwardRequest } from "@/lib/metaTx"
 
 type Cfg = { address: `0x${string}`; abi: Abi }
@@ -20,6 +22,7 @@ export default function Home() {
         <h1 className="text-2xl font-semibold">Camuverse</h1>
         <AppKitButton />
       </div>
+      <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
     </main>
@@ -79,11 +82,23 @@ function Row({ label, value }: { label: string; value: string }) {
   )
 }
 
+function GetVerifiedNotice() {
+  const { address } = useAccount()
+  if (!address) return null
+  return (
+    <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 p-3 text-sm flex items-center justify-between">
+      <span>Verification status: Not verified (CamuVerify placeholder)</span>
+      <Link href="/verify" className="rounded bg-amber-600 text-white px-3 py-1.5 text-xs hover:bg-amber-700">Get Verified</Link>
+    </div>
+  )
+}
+
 function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   const { address } = useAccount()
   const chainId = useChainId()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
+  const { writeContract, isPending } = useWriteContract()
   const sbt: Cfg | undefined = manifest ? (manifest.contracts as any).EarlyAccessSBT : undefined
   const zero = '0x0000000000000000000000000000000000000000'
   const validSbt = !!(sbt && sbt.address.toLowerCase() !== zero)
@@ -107,6 +122,8 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
 
   const tokenUri = useMemo(() => process.env.NEXT_PUBLIC_SBT_TOKEN_URI || 'ipfs://example.com/subscriber-badge.json', [])
   const forwarder = process.env.NEXT_PUBLIC_FORWARDER_ADDRESS as `0x${string}` | undefined
+  const gaslessDefault = (process.env.NEXT_PUBLIC_GASLESS || '').toLowerCase() === 'true'
+  const [gasless, setGasless] = useState(gaslessDefault)
   const [toast, setToast] = useState<string | null>(null)
   useEffect(() => {
     if (!toast) return
@@ -127,54 +144,69 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
           <span>Subscriber #: {Number(subNo || 0) > 0 ? String(subNo) : '-'}</span>
         )}
         {address && hasBadge === false && (
-          <button
-            disabled={!forwarder || !walletClient || !publicClient || !chainId}
-            onClick={async () => {
-              try {
-                if (!forwarder || !walletClient || !publicClient || !chainId || !address) return
-                const { request, domain, types } = await buildClaimForwardRequest({
-                  account: address as `0x${string}`,
-                  tokenUri,
-                  sbtAddress: sbt.address,
-                  sbtAbi: sbt.abi as any,
-                  forwarder,
-                  chainId,
-                  publicClient,
-                })
-                const signature = await walletClient.signTypedData({
-                  account: address as `0x${string}`,
-                  domain,
-                  types: types as any,
-                  primaryType: 'ForwardRequest',
-                  message: request,
-                })
-                const res = await fetch('/api/relay/claim', {
-                  method: 'POST', headers: { 'content-type': 'application/json' },
-                  body: JSON.stringify({ request, signature }),
-                })
-                if (!res.ok) throw new Error(await res.text())
-                const json = await res.json()
-                if (json?.hash && publicClient) {
-                  await publicClient.waitForTransactionReceipt({ hash: json.hash as `0x${string}` })
+          <>
+            <button
+              disabled={isPending}
+              onClick={async () => {
+                try {
+                  if (gasless && forwarder && walletClient && publicClient && chainId) {
+                    const { request, domain, types } = await buildClaimForwardRequest({
+                      account: address as `0x${string}`,
+                      tokenUri,
+                      sbtAddress: sbt.address,
+                      sbtAbi: sbt.abi as any,
+                      forwarder,
+                      chainId,
+                      publicClient,
+                    })
+                    const signature = await walletClient.signTypedData({
+                      account: address as `0x${string}`,
+                      domain,
+                      types: types as any,
+                      primaryType: 'ForwardRequest',
+                      message: request,
+                    })
+                    const res = await fetch('/api/relay/claim', {
+                      method: 'POST', headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({ request, signature }),
+                    })
+                    if (!res.ok) throw new Error(await res.text())
+                    const json = await res.json()
+                    if (json?.hash && publicClient) {
+                      await publicClient.waitForTransactionReceipt({ hash: json.hash as `0x${string}` })
+                    }
+                    await refetch?.()
+                    const r = await refetchSub?.()
+                    const n = Number((r as any)?.data ?? subNo ?? 0)
+                    if (n > 0) setToast(`Claim successful - Subscriber #${n}`)
+                  } else {
+                    const txHash = await writeContract({ address: sbt.address, abi: sbt.abi, functionName: 'claim', args: [tokenUri] })
+                    if (txHash && publicClient) {
+                      await publicClient.waitForTransactionReceipt({ hash: txHash as `0x${string}` })
+                    }
+                    await refetch?.()
+                    const r2 = await refetchSub?.()
+                    const n2 = Number((r2 as any)?.data ?? subNo ?? 0)
+                    if (n2 > 0) setToast(`Claim successful - Subscriber #${n2}`)
+                  }
+                } catch (e) {
+                  console.error(e)
                 }
-                await refetch?.()
-                const r = await refetchSub?.()
-                const n = Number((r as any)?.data ?? subNo ?? 0)
-                if (n > 0) setToast(`Claim successful - Subscriber #${n}`)
-              } catch (e) {
-                console.error(e)
-              }
-            }}
-            className="rounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
-          >
-            Claim Badge
-          </button>
+              }}
+              className="rounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isPending ? 'Claiming...' : (gasless && forwarder ? 'Claim Gasless' : 'Claim Badge')}
+            </button>
+            <label className="ml-3 inline-flex items-center gap-1 text-xs">
+              <input type="checkbox" checked={gasless} onChange={(e) => setGasless(e.target.checked)} /> Gasless
+            </label>
+          </>
         )}
       </div>
       {toast && (
         <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg">
           <span>{toast}</span>
-          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>x</button>
+          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ã—</button>
         </div>
       )}
     </div>

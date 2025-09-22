@@ -1,0 +1,11 @@
+{
+"name": "Camuverse Subscriber Badge",
+"description": "Non-transferable early access badge for the Camuverse.",
+  "image": "ipfs://bafybeiaq56i3s4otczdfmzjkvufeuhy5wv7wus2v6oohz7dmksc7j4awry/badge.png",
+"external_url": "https://camuverse.io",
+"attributes": [
+{ "trait_type": "Platform", "value": "Camuverse" },
+{ "trait_type": "Non-Transferable", "value": "true" },
+{ "trait_type": "Chain", "value": "Base" }
+]
+}
