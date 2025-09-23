@@ -125,6 +125,8 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   const gaslessDefault = (process.env.NEXT_PUBLIC_GASLESS || '').toLowerCase() === 'true'
   const [gasless, setGasless] = useState(gaslessDefault)
   const [toast, setToast] = useState<string | null>(null)
+  const [toastDetails, setToastDetails] = useState<string | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(null), 4000)
@@ -193,6 +195,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                   console.error(e)
                   const msg = e instanceof Error ? e.message : 'Claim failed'
                   setToast(msg)
+                  setToastDetails(String((e as any)?.stack || (e as any)?.message || e))
                 }
               }}
               className="rounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
@@ -209,8 +212,14 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
         <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg max-w-md">
           <div className="flex items-start gap-3">
             <span className="leading-relaxed">{toast}</span>
-            <button className="ml-auto text-white/80 hover:text-white" onClick={() => { setToast(null); /* clear details if present */ }}>Dismiss</button>
+            <button className="ml-auto text-white/80 hover:text-white" onClick={() => { setToast(null); setToastDetails(null); setShowDetails(false) }}>Dismiss</button>
           </div>
+          {toastDetails && (
+            <details className="mt-2" open={showDetails} onToggle={(e) => setShowDetails((e.target as HTMLDetailsElement).open)}>
+              <summary className="cursor-pointer">Show Details</summary>
+              <pre className="mt-1 whitespace-pre-wrap break-all">{toastDetails}</pre>
+            </details>
+          )}
         </div>
       )}
     </div>
