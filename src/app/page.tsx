@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Abi } from "viem"
@@ -191,6 +191,8 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                   }
                 } catch (e) {
                   console.error(e)
+                  const msg = e instanceof Error ? e.message : 'Claim failed'
+                  setToast(msg)
                 }
               }}
               className="rounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
@@ -206,9 +208,10 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
       {toast && (
         <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg">
           <span>{toast}</span>
-          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ã—</button>
+          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ãƒâ€”</button>
         </div>
       )}
     </div>
   )
 }
+
