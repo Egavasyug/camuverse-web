@@ -39,7 +39,7 @@ export async function buildClaimForwardRequest(opts: {
   const account = getAddress(opts.account) as `0x${string}`
   const sbtAddress = getAddress(opts.sbtAddress) as `0x${string}`
   const forwarder = getAddress(opts.forwarder) as `0x${string}`
-  const gas = opts.gas ?? BigInt(200000)
+  const gas = opts.gas ?? BigInt(300000)
   const nonce = await publicClient.readContract({ address: forwarder, abi: minimalForwarderAbi, functionName: 'getNonce', args: [account] }) as bigint
   const data = encodeFunctionData({ abi: sbtAbi, functionName: 'claim', args: [tokenUri] })
   const request: ForwardRequest = { from: account, to: sbtAddress, value: BigInt(0), gas, nonce, data }

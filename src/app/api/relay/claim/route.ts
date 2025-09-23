@@ -105,6 +105,21 @@ export async function POST(request: Request) {
     const walletClient = createWalletClient({ account, chain: base, transport })
 
     const reqNormalized = normalizeRequest(forwardReq as IncomingForwardRequest)
+
+    // Pre-send simulation to catch inner failures (e.g., already claimed, wrong forwarder, out of gas)
+    try {
+      await publicClient.simulateContract({
+        address: FORWARDER_ADDRESS,
+        abi: forwarderAbi,
+        functionName: 'execute',
+        args: [reqNormalized, signature as Hex],
+        account: account.address,
+      })
+    } catch (simErr: any) {
+      const msg = typeof simErr?.message === 'string' ? simErr.message : 'Simulation failed'
+      return NextResponse.json({ ok: false, error: msg }, { status: 400 })
+    }
+
     const txHash = await walletClient.writeContract({
       address: FORWARDER_ADDRESS,
       abi: forwarderAbi,
@@ -146,10 +161,13 @@ export async function POST(request: Request) {
       await supabaseAdmin.from('sbt_claims').insert(payload)
     }
 
+    if (!tokenId) {
+      return NextResponse.json({ ok: false, hash: txHash, error: 'Mint did not emit Transfer event; inner call likely failed', blockNumber: Number(receipt.blockNumber), chainId }, { status: 500 })
+    }
+
     return NextResponse.json({ ok: true, hash: txHash, tokenId, blockNumber: Number(receipt.blockNumber), chainId })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Relay failed'
     return NextResponse.json({ ok: false, error: msg }, { status: 500 })
   }
 }
-
