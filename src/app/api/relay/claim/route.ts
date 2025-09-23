@@ -115,8 +115,8 @@ export async function POST(request: Request) {
         args: [reqNormalized, signature as Hex],
         account: account.address,
       })
-    } catch (simErr: any) {
-      const msg = typeof simErr?.message === 'string' ? simErr.message : 'Simulation failed'
+    } catch (simErr: unknown) {
+      const msg = simErr instanceof Error ? simErr.message : 'Simulation failed'
       return NextResponse.json({ ok: false, error: msg }, { status: 400 })
     }
 
