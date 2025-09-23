@@ -127,6 +127,8 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   const [toast, setToast] = useState<string | null>(null)
   const [toastDetails, setToastDetails] = useState<string | null>(null)
   const [showDetails, setShowDetails] = useState(false)
+  const [localHasBadge, setLocalHasBadge] = useState<boolean | null>(null)
+  const [localSubNo, setLocalSubNo] = useState<number | null>(null)
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(null), 4000)
@@ -138,14 +140,20 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
     <div className="rounded-lg border border-gray-200 p-4 bg-white/50 dark:bg-zinc-900/50">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-medium">Subscriber Badge Token</h2>
-        <span className="text-xs text-gray-600">{sbt.address}</span>
+        <a
+          href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + sbt.address}
+          target="_blank" rel="noreferrer"
+          className="text-xs text-gray-600 font-mono underline break-all"
+        >
+          {sbt.address}
+        </a>
       </div>
       <div className="text-sm flex items-center gap-3 flex-wrap">
-        <span>Status: {address ? (hasBadge ? 'Claimed' : 'Not claimed') : 'Connect wallet'}</span>
-        {address && hasBadge === true && (
-          <span>Subscriber #: {Number(subNo || 0) > 0 ? String(subNo) : '-'}</span>
+        <span>Status: {address ? ((localHasBadge ?? (hasBadge as unknown as boolean)) ? 'Claimed' : 'Not claimed') : 'Connect wallet'}</span>
+        {address && (localHasBadge ?? (hasBadge as unknown as boolean)) === true && (
+          <span>Subscriber #: {(localSubNo ?? Number(subNo || 0)) > 0 ? String(localSubNo ?? Number(subNo || 0)) : '-'}</span>
         )}
-        {address && hasBadge === false && (
+        {address && (localHasBadge ?? (hasBadge as unknown as boolean)) === false && (
           <>
             <button
               disabled={isPending}
@@ -177,19 +185,22 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                     if (json?.hash && publicClient) {
                       await publicClient.waitForTransactionReceipt({ hash: json.hash as `0x${string}` })
                     }
+                    if (json?.tokenId) setLocalSubNo(Number(json.tokenId))
+                    setLocalHasBadge(true)
                     await refetch?.()
                     const r = await refetchSub?.()
-                    const n = Number((r as any)?.data ?? subNo ?? 0)
-                    if (n > 0) setToast(`Claim successful - Subscriber #${n}`)
+                    const n = Number((r as any)?.data ?? subNo ?? localSubNo ?? 0)
+                    if (n > 0) { setLocalSubNo(n); setToast(`Claim successful - Subscriber #${n}`) }
                   } else {
                     const txHash = (await writeContract({ address: sbt.address, abi: sbt.abi, functionName: 'claim', args: [tokenUri] } as any) as unknown) as `0x${string}`
                     if (publicClient) {
                       await publicClient.waitForTransactionReceipt({ hash: txHash })
                     }
+                    setLocalHasBadge(true)
                     await refetch?.()
                     const r2 = await refetchSub?.()
-                    const n2 = Number((r2 as any)?.data ?? subNo ?? 0)
-                    if (n2 > 0) setToast(`Claim successful - Subscriber #${n2}`)
+                    const n2 = Number((r2 as any)?.data ?? subNo ?? localSubNo ?? 0)
+                    if (n2 > 0) { setLocalSubNo(n2); setToast(`Claim successful - Subscriber #${n2}`) }
                   }
                 } catch (e) {
                   console.error(e)
