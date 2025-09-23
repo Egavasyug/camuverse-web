@@ -36,7 +36,6 @@ export const config = wagmiAdapter
     })
 
 declare global {
-  // eslint-disable-next-line no-var
   var __appkit_inited__: boolean | undefined
 }
 

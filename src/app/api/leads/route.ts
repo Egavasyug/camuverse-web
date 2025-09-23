@@ -37,7 +37,6 @@ async function verifyRecaptcha(token: string | undefined, ip: string | undefined
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: params.toString(),
-      // @ts-expect-error next fetch options accepted
       next: { revalidate: 0 },
     })
     const json = await res.json() as { success?: boolean }

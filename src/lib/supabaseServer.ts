@@ -5,7 +5,6 @@ const url = process.env.SUPABASE_URL
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE
 
 if (!url || !serviceKey) {
-  // eslint-disable-next-line no-console
   console.warn('Supabase env vars missing: SUPABASE_URL or SUPABASE_SERVICE_ROLE')
 }
 
