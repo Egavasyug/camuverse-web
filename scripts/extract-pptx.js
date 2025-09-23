@@ -30,17 +30,16 @@ async function extractMedia(zip) {
   await ensureDir(assetsDir);
   const mediaFolder = zip.folder('ppt/media');
   if (!mediaFolder) return [];
-  const files = Object.keys(mediaFolder.files);
   const out = [];
-  for (const name of files) {
-    const entry = mediaFolder.file(name);
-    if (!entry) continue;
-    const data = await entry.async('nodebuffer');
-    const basename = path.basename(name);
+  // JSZip folder.forEach yields relative paths within the folder scope
+  mediaFolder.forEach(async (relativePath, file) => {
+    if (!file || file.dir) return;
+    const data = await file.async('nodebuffer');
+    const basename = path.basename(relativePath);
     const dest = path.join(assetsDir, basename);
     await fsp.writeFile(dest, data);
     out.push(basename);
-  }
+  });
   return out;
 }
 
@@ -85,14 +84,14 @@ async function buildRelMap(zip, n) {
   return map;
 }
 
-async function generateSlides(zip) {
+async function generateSlidesJson(zip) {
   await ensureDir(slidesOutPath);
   const slideFolder = zip.folder('ppt/slides');
   const files = Object.keys(slideFolder.files)
     .filter(n => /slide\d+\.xml$/.test(n))
     .sort((a,b) => parseInt(a.match(/slide(\d+)\.xml/)[1],10) - parseInt(b.match(/slide(\d+)\.xml/)[1],10));
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
-  const parts = ['---\ntitle: Slides\n---\n', '# Slides', ''];
+  const slides = [];
   for (const name of files) {
     const n = parseInt(name.match(/slide(\d+)\.xml/)[1],10);
     const xml = await zip.file(name).async('string');
@@ -100,12 +99,13 @@ async function generateSlides(zip) {
     const texts = collectTexts(slide);
     const embeds = collectEmbeds(slide);
     const relMap = await buildRelMap(zip, n);
-    parts.push(`\n## Slide ${n}`);
-    const images = embeds.map(id => relMap[id]).filter(Boolean);
-    for (const img of images) parts.push(`![](/docs/cammunitydao-overview/${img})`);
-    if (texts.length) parts.push(texts.map(t => `- ${t}`).join('\n'));
+    const images = embeds
+      .map(id => relMap[id])
+      .filter(Boolean)
+      .map(img => `/docs/cammunitydao-overview/${String(img).replace(/^\.\.\//, '')}`);
+    slides.push({ index: n, images, bullets: texts });
   }
-  await fsp.writeFile(path.join(slidesOutPath, 'page.mdx'), parts.join('\n') + '\n', 'utf8');
+  await fsp.writeFile(path.join(slidesOutPath, 'slides.json'), JSON.stringify({ slides }, null, 2), 'utf8');
 }
 
 async function main() {
@@ -113,8 +113,8 @@ async function main() {
   console.log('Reading', pptx);
   const zip = await loadZip(pptx);
   await extractMedia(zip);
-  await generateSlides(zip);
-  console.log('Done: assets in public/docs/cammunitydao-overview, MDX at /docs/slides');
+  await generateSlidesJson(zip);
+  console.log('Done: assets in public/docs/cammunitydao-overview, JSON at src/app/docs/slides/slides.json');
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
