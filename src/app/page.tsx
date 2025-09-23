@@ -151,7 +151,25 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
       <div className="text-sm flex items-center gap-3 flex-wrap">
         <span>Status: {address ? ((localHasBadge ?? (hasBadge as unknown as boolean)) ? 'Claimed' : 'Not claimed') : 'Connect wallet'}</span>
         {address && (localHasBadge ?? (hasBadge as unknown as boolean)) === true && (
-          <span>Subscriber #: {(localSubNo ?? Number(subNo || 0)) > 0 ? String(localSubNo ?? Number(subNo || 0)) : '-'}</span>
+          <span>
+            Subscriber #:
+            {(localSubNo ?? Number(subNo || 0)) > 0 ? (
+              <>
+                {' '}{String(localSubNo ?? Number(subNo || 0))}{' '}
+                <a
+                  className="underline"
+                  href={
+                    (chainId === 84532 ? 'https://sepolia.basescan.org' : 'https://basescan.org') +
+                    '/nft/' + sbt.address + '/' + String(localSubNo ?? Number(subNo || 0))
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View on Basescan
+                </a>
+              </>
+            ) : ' -'}
+          </span>
         )}
         {address && (localHasBadge ?? (hasBadge as unknown as boolean)) === false && (
           <>
