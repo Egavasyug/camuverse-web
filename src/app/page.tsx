@@ -14,6 +14,8 @@ type Cfg = { address: `0x${string}`; abi: Abi }
 const AppKitButton = 'appkit-button' as unknown as React.ComponentType<React.HTMLAttributes<HTMLElement>>
 
 export default function Home() {
+  const chainId = useChainId()
+  const { address } = useAccount()
   const [manifest, setManifest] = useState<Manifest | null>(null)
   useEffect(() => { loadManifest().then(setManifest).catch(console.error) }, [])
 
@@ -22,6 +24,9 @@ export default function Home() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Camuverse</h1>
         <AppKitButton />
+      </div>
+      <DevStatus manifest={manifest} chainId={chainId} address={address || ''} />
+      <GetVerifiedNotice />
       
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -212,7 +217,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
       {toast && (
         <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg">
           <span>{toast}</span>
-          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ãƒâ€”</button>
+          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</button>
         </div>
       )}
     </div>
@@ -220,10 +225,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
 }
 
 
-function DevStatus({ manifest }: { manifest: Manifest | null }) {
-  if (process.env.NODE_ENV === 'production') return null
-  const chainId = useChainId()
-  const { address } = useAccount()
+function DevStatus({ manifest, chainId, address }: { manifest: Manifest | null; chainId: number; address: string }) {
   const sbt = (manifest as any)?.contracts?.EarlyAccessSBT as { address?: string } | undefined
   const rawFwd = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
   let fwd: string | 'unset' | 'invalid' = 'unset'
@@ -231,6 +233,7 @@ function DevStatus({ manifest }: { manifest: Manifest | null }) {
     try { fwd = getAddress(rawFwd) } catch { fwd = 'invalid' }
   }
   const sbtAddr = sbt?.address || 'unset'
+  if (process.env.NODE_ENV === 'production') return null
   return (
     <div className="text-xs rounded-md bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-2 flex flex-wrap gap-x-4 gap-y-1">
       <span>Dev Status</span>
@@ -241,3 +244,5 @@ function DevStatus({ manifest }: { manifest: Manifest | null }) {
     </div>
   )
 }
+
+
