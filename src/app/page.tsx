@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 import type React from 'react'
 import Link from 'next/link'
 import { loadManifest, type Manifest } from "@/lib/manifest"
+import { getAddress } from 'viem'
 import { useAccount, useReadContract, useWriteContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
 import { buildClaimForwardRequest } from "@/lib/metaTx"
 
@@ -121,7 +122,11 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   })
 
   const tokenUri = useMemo(() => process.env.NEXT_PUBLIC_SBT_TOKEN_URI || 'ipfs://example.com/subscriber-badge.json', [])
-  const forwarder = process.env.NEXT_PUBLIC_FORWARDER_ADDRESS as `0x${string}` | undefined
+  const forwarder = useMemo(() => {
+    const raw = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
+    if (!raw) return undefined
+    try { return getAddress(raw) as `0x${string}` } catch { return undefined }
+  }, [])
   const gaslessDefault = (process.env.NEXT_PUBLIC_GASLESS || '').toLowerCase() === 'true'
   const [gasless, setGasless] = useState(gaslessDefault)
   const [toast, setToast] = useState<string | null>(null)
