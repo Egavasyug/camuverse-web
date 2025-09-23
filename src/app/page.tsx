@@ -22,8 +22,7 @@ export default function Home() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Camuverse</h1>
         <AppKitButton />
-      </div>
-      <GetVerifiedNotice />
+      
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
     </main>
@@ -220,3 +219,25 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   )
 }
 
+
+function DevStatus({ manifest }: { manifest: Manifest | null }) {
+  if (process.env.NODE_ENV === 'production') return null
+  const chainId = useChainId()
+  const { address } = useAccount()
+  const sbt = (manifest as any)?.contracts?.EarlyAccessSBT as { address?: string } | undefined
+  const rawFwd = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
+  let fwd: string | 'unset' | 'invalid' = 'unset'
+  if (rawFwd) {
+    try { fwd = getAddress(rawFwd) } catch { fwd = 'invalid' }
+  }
+  const sbtAddr = sbt?.address || 'unset'
+  return (
+    <div className="text-xs rounded-md bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-2 flex flex-wrap gap-x-4 gap-y-1">
+      <span>Dev Status</span>
+      <span>Chain: {chainId}</span>
+      <span>Forwarder: {String(fwd)}</span>
+      <span>SBT: {sbtAddr}</span>
+      <span>Wallet: {address ? address : 'disconnected'}</span>
+    </div>
+  )
+}
