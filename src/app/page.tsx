@@ -206,9 +206,11 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
         )}
       </div>
       {toast && (
-        <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg">
-          <span>{toast}</span>
-          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ãƒâ€”</button>
+        <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg max-w-md">
+          <div className="flex items-start gap-3">
+            <span className="leading-relaxed">{toast}</span>
+            <button className="ml-auto text-white/80 hover:text-white" onClick={() => { setToast(null); /* clear details if present */ }}>Dismiss</button>
+          </div>
         </div>
       )}
     </div>
