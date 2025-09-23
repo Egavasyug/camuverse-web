@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react"
 import type React from 'react'
 import Link from 'next/link'
 import { loadManifest, type Manifest } from "@/lib/manifest"
-import { getAddress } from 'viem'
 import { useAccount, useReadContract, useWriteContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
 import { buildClaimForwardRequest } from "@/lib/metaTx"
 
@@ -14,8 +13,6 @@ type Cfg = { address: `0x${string}`; abi: Abi }
 const AppKitButton = 'appkit-button' as unknown as React.ComponentType<React.HTMLAttributes<HTMLElement>>
 
 export default function Home() {
-  const chainId = useChainId()
-  const { address } = useAccount()
   const [manifest, setManifest] = useState<Manifest | null>(null)
   useEffect(() => { loadManifest().then(setManifest).catch(console.error) }, [])
 
@@ -25,9 +22,7 @@ export default function Home() {
         <h1 className="text-2xl font-semibold">Camuverse</h1>
         <AppKitButton />
       </div>
-      <DevStatus manifest={manifest} chainId={chainId} address={address || ''} />
       <GetVerifiedNotice />
-      
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
     </main>
@@ -126,11 +121,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   })
 
   const tokenUri = useMemo(() => process.env.NEXT_PUBLIC_SBT_TOKEN_URI || 'ipfs://example.com/subscriber-badge.json', [])
-  const forwarder = useMemo(() => {
-    const raw = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
-    if (!raw) return undefined
-    try { return getAddress(raw) as `0x${string}` } catch { return undefined }
-  }, [])
+  const forwarder = process.env.NEXT_PUBLIC_FORWARDER_ADDRESS as `0x${string}` | undefined
   const gaslessDefault = (process.env.NEXT_PUBLIC_GASLESS || '').toLowerCase() === 'true'
   const [gasless, setGasless] = useState(gaslessDefault)
   const [toast, setToast] = useState<string | null>(null)
@@ -217,32 +208,10 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
       {toast && (
         <div className="fixed bottom-4 right-4 z-50 rounded-md bg-black text-white text-sm px-4 py-2 shadow-lg">
           <span>{toast}</span>
-          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</button>
+          <button className="ml-3 text-white/80 hover:text-white" onClick={() => setToast(null)}>Ãƒâ€”</button>
         </div>
       )}
     </div>
   )
 }
-
-
-function DevStatus({ manifest, chainId, address }: { manifest: Manifest | null; chainId: number; address: string }) {
-  const sbt = (manifest as any)?.contracts?.EarlyAccessSBT as { address?: string } | undefined
-  const rawFwd = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
-  let fwd: string | 'unset' | 'invalid' = 'unset'
-  if (rawFwd) {
-    try { fwd = getAddress(rawFwd) } catch { fwd = 'invalid' }
-  }
-  const sbtAddr = sbt?.address || 'unset'
-  if (process.env.NODE_ENV === 'production') return null
-  return (
-    <div className="text-xs rounded-md bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-2 flex flex-wrap gap-x-4 gap-y-1">
-      <span>Dev Status</span>
-      <span>Chain: {chainId}</span>
-      <span>Forwarder: {String(fwd)}</span>
-      <span>SBT: {sbtAddr}</span>
-      <span>Wallet: {address ? address : 'disconnected'}</span>
-    </div>
-  )
-}
-
 
