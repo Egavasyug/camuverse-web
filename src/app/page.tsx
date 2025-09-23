@@ -170,7 +170,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                     })
                     const res = await fetch('/api/relay/claim', {
                       method: 'POST', headers: { 'content-type': 'application/json' },
-                      body: JSON.stringify({ request, signature }),
+                      body: JSON.stringify({ request, signature }, (_k, v) => typeof v === 'bigint' ? v.toString() : v),
                     })
                     if (!res.ok) throw new Error(await res.text())
                     const json = await res.json()
