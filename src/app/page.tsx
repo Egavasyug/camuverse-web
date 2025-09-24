@@ -31,6 +31,7 @@ export default function Home() {
 
 function Dashboard({ manifest }: { manifest: Manifest }) {
   const { address } = useAccount()
+  const chainId = useChainId()
   const dao: Cfg = manifest.contracts.CammunityDAO
   const wrapper: Cfg | undefined = (manifest.contracts as any).VestingWrapper
 
@@ -51,12 +52,30 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card title="DAO">
-        <Row label="Proxy Address" value={dao.address} />
+        <Row label="Proxy Address" value={
+            <a
+              href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + dao.address}
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              {dao.address}
+            </a>
+          } />
         <Row label="Proposals" value={String(proposalCount ?? "?")} />
       </Card>
       {wrapper && (
         <Card title="Vesting Wrapper">
-          <Row label="Proxy Address" value={wrapper.address} />
+          <Row label="Proxy Address" value={
+            <a
+              href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + wrapper.address}
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              {wrapper.address}
+            </a>
+          } />
           <Row label="Your Unlocked Tokens" value={address ? String(tokensUnlocked ?? "0") : "Connect wallet"} />
         </Card>
       )}
@@ -73,7 +92,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   )
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
       <span className="text-gray-500">{label}</span>
@@ -254,4 +273,8 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
     </div>
   )
 }
+
+
+
+
 
