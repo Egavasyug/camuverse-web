@@ -25,7 +25,8 @@ export default function Home() {
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
-      <FooterContact />`r`n    </main>
+      <FooterContact />
+    </main>
   )
 }
 
