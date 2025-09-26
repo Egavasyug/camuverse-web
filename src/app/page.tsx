@@ -25,7 +25,7 @@ export default function Home() {
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
-    </main>
+      <FooterContact />`r`n    </main>
   )
 }
 
@@ -278,3 +278,17 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
 
 
 
+
+
+function FooterContact() {
+  return (
+    <footer className="mt-12 border-t border-gray-200 pt-4 text-sm text-gray-600">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <span>
+          Contact: {" "}
+          <a href="mailto:info@camuverse.io" className="underline">info@camuverse.io</a>
+        </span>
+      </div>
+    </footer>
+  )
+}
