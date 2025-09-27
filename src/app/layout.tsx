@@ -4,7 +4,8 @@ import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
-import { WalletAccessButton } from '@/components/WalletAccessButton'
+import { ConnectModalButton } from '@/components/ConnectModalButton'
+import { CreateWalletButton } from '@/components/CreateWalletButton'
 import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
@@ -44,7 +45,8 @@ export default function RootLayout({
             <nav className="ml-auto flex items-center gap-4">
               <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Cammunity DAO LLC Whitepaper</Link>
               <WaitlistControl />
-              <WalletAccessButton />
+              <ConnectModalButton />
+              <CreateWalletButton />
             </nav>
           </header>
           <main>
@@ -55,6 +57,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
-
