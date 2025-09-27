@@ -5,6 +5,7 @@ import type { Abi } from "viem"
 import { useEffect, useMemo, useState } from "react"
 import type React from 'react'
 import Link from 'next/link'
+import { WalletAccessButton } from '@/components/WalletAccessButton'
 import { loadManifest, type Manifest } from "@/lib/manifest"
 import { useAccount, useReadContract, useWriteContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
 import { buildClaimForwardRequest } from "@/lib/metaTx"
@@ -18,7 +19,8 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Camuverse</h1></div>
+        <h1 className="text-2xl font-semibold">Camuverse: Enabling decentralized creator monetization!</h1></div>
+      <WalletAccessButton />
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
