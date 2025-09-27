@@ -4,6 +4,7 @@ import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
+import { HeaderWalletButton } from '@/components/HeaderWalletButton'
 import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
@@ -43,6 +44,7 @@ export default function RootLayout({
             <nav className="ml-auto flex items-center gap-4">
               <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Whitepaper</Link>
               <WaitlistControl />
+              <HeaderWalletButton />
             </nav>
           </header>
           <main>
