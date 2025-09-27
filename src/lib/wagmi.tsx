@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, cookieStorage, createStorage, createConfig, http } from 'wagmi'
+import { PrivyProvider } from '@privy-io/react-auth'
 import { base } from 'wagmi/chains'
 import { createAppKit } from '@reown/appkit'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
