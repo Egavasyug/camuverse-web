@@ -2,72 +2,40 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, cookieStorage, createStorage, createConfig, http } from 'wagmi'
-import { PrivyProvider } from '@privy-io/react-auth'
 import { base } from 'wagmi/chains'
-import { createAppKit } from '@reown/appkit'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
+import { PrivyProvider } from '@privy-io/react-auth'
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+const WC_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
-if (!projectId) {
-  const msg = 'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set.'
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error(msg)
-  } else {
-    console.warn(msg + ' Set it in .env.local for local development.')
-  }
-}
-
-const wagmiAdapter = projectId
-  ? new WagmiAdapter({
-      projectId,
-      networks: [base],
-      ssr: true,
-      storage: createStorage({ storage: cookieStorage })
-    })
-  : null
-
-export const config = wagmiAdapter
-  ? wagmiAdapter.wagmiConfig
-  : createConfig({
-      chains: [base],
-      transports: { [base.id]: http() },
-      ssr: true,
-      storage: createStorage({ storage: cookieStorage })
-    })
-
-declare global {
-  var __appkit_inited__: boolean | undefined
-}
-
-if (typeof window !== 'undefined' && projectId && wagmiAdapter && !globalThis.__appkit_inited__) {
-  // Ensure AppKit is initialized exactly once to avoid transient config warnings
-  globalThis.__appkit_inited__ = true
-  const origin = window.location.origin
-  createAppKit({
-    networks: [base],
-    adapters: [wagmiAdapter],
-    projectId,
-    features: {
-      email: false,
-      socials: [],
-      onramp: false
-    },
-    metadata: {
-      name: 'Camuverse',
-      description: 'Camuverse frontend',
-      url: origin,
-      icons: [origin + '/logo.png']
-    }
-  })
-}
+export const config = createConfig({
+  chains: [base],
+  transports: { [base.id]: http() },
+  connectors: [
+    injected({ shimDisconnect: true }),
+    ...(WC_ID ? [walletConnect({ projectId: WC_ID })] as const : []),
+    coinbaseWallet({ appName: 'Camuverse' }),
+  ],
+  ssr: true,
+  storage: createStorage({ storage: cookieStorage }),
+})
 
 const queryClient = new QueryClient()
 
 export function Web3Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
+    <PrivyProvider
+      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ''}
+      config={{
+        embeddedWallets: { ethereum: { createOnLogin: 'users-without-wallets' } },
+        loginMethods: ['email', 'google'],
+        appearance: { theme: 'light' },
+        walletConnectCloudProjectId: WC_ID,
+      }}
+    >
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </WagmiProvider>
+    </PrivyProvider>
   )
 }

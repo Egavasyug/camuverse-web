@@ -44,3 +44,6 @@ next-env.d.ts
 # office docs + lock files
 *.pptx
 ~ $* 
+
+.env.local
+

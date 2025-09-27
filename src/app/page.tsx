@@ -10,7 +10,6 @@ import { useAccount, useReadContract, useWriteContract, usePublicClient, useWall
 import { buildClaimForwardRequest } from "@/lib/metaTx"
 
 type Cfg = { address: `0x${string}`; abi: Abi }
-const AppKitButton = 'appkit-button' as unknown as React.ComponentType<React.HTMLAttributes<HTMLElement>>
 
 export default function Home() {
   const [manifest, setManifest] = useState<Manifest | null>(null)
@@ -19,9 +18,7 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Camuverse</h1>
-        <AppKitButton />
-      </div>
+        <h1 className="text-2xl font-semibold">Camuverse</h1></div>
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -293,4 +290,5 @@ function FooterContact() {
     </footer>
   )
 }
+
 
