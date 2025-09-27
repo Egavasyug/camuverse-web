@@ -3,8 +3,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, cookieStorage, createStorage, createConfig, http } from 'wagmi'
 import { base } from 'wagmi/chains'
-import { injected, coinbaseWallet } from 'wagmi/connectors'
+import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors'
 import { PrivyProvider } from '@privy-io/react-auth'
+
+const WC_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
 
 export const config = createConfig({
@@ -12,6 +14,7 @@ export const config = createConfig({
   transports: { [base.id]: http() },
   connectors: [
     injected({ shimDisconnect: true }),
+    ...(WC_ID ? [walletConnect({ projectId: WC_ID, qrModalOptions: { explorerRecommendedWalletIds: 'NONE' } })] as const : []),
     
     coinbaseWallet({ appName: 'Camuverse' }),
   ],
@@ -38,4 +41,5 @@ export function Web3Providers({ children }: { children: React.ReactNode }) {
     </PrivyProvider>
   )
 }
+
 

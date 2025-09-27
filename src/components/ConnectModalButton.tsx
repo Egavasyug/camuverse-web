@@ -4,19 +4,29 @@ import { useState } from 'react'
 import { useConnect } from 'wagmi'
 import { usePrivy } from '@privy-io/react-auth'
 
+type MaybeReady = { ready?: boolean }
+
 export function ConnectModalButton() {
   const { connectors, connect, isPending } = useConnect()
   const { login } = usePrivy()
   const [open, setOpen] = useState(false)
 
   const injected = connectors.find(
-    (c) => c.id === 'injected' || c.name.toLowerCase().includes('injected') || c.name.toLowerCase().includes('metamask')
+    (c) => c.id === 'injected' || c.name.toLowerCase().includes('injected') || c.name.toLowerCase().includes('metamask') || c.name.toLowerCase().includes('rabby')
   )
-  const coinbase = connectors.find((c) => c.id === 'coinbaseWallet' || c.name.toLowerCase().includes('coinbase'))
+  const coinbase = connectors.find(
+    (c) => c.id === 'coinbaseWallet' || c.name.toLowerCase().includes('coinbase')
+  )
+  const wc = connectors.find(
+    (c) => c.id === 'walletConnect' || c.name.toLowerCase().includes('walletconnect')
+  )
+
+  const injectedReady = Boolean((injected as MaybeReady | undefined)?.ready)
+  const coinbaseReady = Boolean((coinbase as MaybeReady | undefined)?.ready)
 
   function handleClick() {
-    if (injected) { connect({ connector: injected }); return }
-    if (coinbase) { connect({ connector: coinbase }); return }
+    if (injected && injectedReady) { connect({ connector: injected }); return }
+    if (coinbase && coinbaseReady) { connect({ connector: coinbase }); return }
     setOpen(true)
   }
 
@@ -55,6 +65,15 @@ export function ConnectModalButton() {
               >
                 Get Coinbase Wallet
               </a>
+              {wc && (
+                <button
+                  onClick={() => { connect({ connector: wc }); setOpen(false) }}
+                  disabled={isPending}
+                  className="w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-sm hover:bg-zinc-800 disabled:opacity-50"
+                >
+                  More wallet options (WalletConnect)
+                </button>
+              )}
               <div className="pt-1" />
               <button
                 onClick={() => { login(); setOpen(false) }}
@@ -69,4 +88,3 @@ export function ConnectModalButton() {
     </>
   )
 }
-

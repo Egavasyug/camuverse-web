@@ -8,7 +8,7 @@
         "start": "next start",
         "lint": "eslint",
         "icons:gen": "node scripts/gen-icons.mjs",
-        "docs:import": "node scripts/extract-pptx.js",
+        "docs:import": "node scripts/extract-pptx.mjs",
         "index:sbt": "node scripts/sbt-indexer.mjs",
         "sbt:meta": "node scripts/make-sbt-metadata.mjs"
     },
