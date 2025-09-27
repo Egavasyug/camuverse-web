@@ -21,12 +21,13 @@ export function ConnectModalButton() {
     (c) => c.id === 'walletConnect' || c.name.toLowerCase().includes('walletconnect')
   )
 
-  const injectedReady = Boolean((injected as MaybeReady | undefined)?.ready)
-  const coinbaseReady = Boolean((coinbase as MaybeReady | undefined)?.ready)
-
-  function handleClick() {
-    if (injected && injectedReady) { connect({ connector: injected }); return }
-    if (coinbase && coinbaseReady) { connect({ connector: coinbase }); return }
+  async function handleClick() {
+    if (injected) {
+      try { await connect({ connector: injected }); return } catch { /* ignore */ }
+    }
+    if (coinbase && Boolean((coinbase as MaybeReady | undefined)?.ready)) {
+      try { await connect({ connector: coinbase }); return } catch { /* ignore */ }
+    }
     setOpen(true)
   }
 
