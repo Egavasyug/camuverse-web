@@ -13,7 +13,7 @@ export const config = createConfig({
   transports: { [base.id]: http() },
   connectors: [
     injected({ shimDisconnect: true }),
-    ...(WC_ID ? [walletConnect({ projectId: WC_ID })] as const : []),
+    ...(WC_ID ? [walletConnect({ projectId: WC_ID, qrModalOptions: { explorerRecommendedWalletIds: 'NONE' } })] as const : []),
     coinbaseWallet({ appName: 'Camuverse' }),
   ],
   ssr: true,
