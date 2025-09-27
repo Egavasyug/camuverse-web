@@ -5,6 +5,7 @@ import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
 import { HeaderWalletButton } from '@/components/HeaderWalletButton'
+import { CreateWalletButton } from '@/components/CreateWalletButton'
 import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
@@ -45,6 +46,7 @@ export default function RootLayout({
               <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Whitepaper</Link>
               <WaitlistControl />
               <HeaderWalletButton />
+              <CreateWalletButton />
             </nav>
           </header>
           <main>
