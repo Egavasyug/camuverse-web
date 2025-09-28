@@ -11,6 +11,12 @@ export function ConnectModalButton() {
   const { login } = usePrivy()
   const [open, setOpen] = useState(false)
   const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  const hasMetaMask = typeof window !== 'undefined' && !!(
+    (window as any).ethereum?.isMetaMask || (window as any).ethereum?.providers?.some((p: any) => p?.isMetaMask)
+  )
+  const hasCoinbaseExt = typeof window !== 'undefined' && !!(
+    (window as any).coinbaseWalletExtension || (window as any).ethereum?.isCoinbaseWallet || (window as any).ethereum?.providers?.some((p: any) => p?.isCoinbaseWallet)
+  )
 
   const injected = connectors.find(
     (c) => c.id === 'injected' || c.name.toLowerCase().includes('injected') || c.name.toLowerCase().includes('metamask') || c.name.toLowerCase().includes('rabby')
@@ -23,16 +29,19 @@ export function ConnectModalButton() {
   )
 
   async function handleClick() {
-    // Desktop: prefer injected/Coinbase; Mobile: fall back to WalletConnect if available
-    if (injected) {
+    // Desktop: only connect injected if MetaMask is detected (avoid store redirects)
+    if (!isMobile && hasMetaMask && injected) {
       try { await connect({ connector: injected }); return } catch { /* continue */ }
     }
-    if (coinbase && Boolean((coinbase as MaybeReady | undefined)?.ready)) {
+    // Coinbase: only connect if extension detected
+    if (!isMobile && hasCoinbaseExt && coinbase) {
       try { await connect({ connector: coinbase }); return } catch { /* continue */ }
     }
+    // Mobile: prefer WalletConnect flow
     if (isMobile && wc) {
       try { await connect({ connector: wc }); return } catch { /* show modal below */ }
     }
+    // Fallback
     setOpen(true)
   }
 
