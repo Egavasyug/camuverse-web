@@ -37,13 +37,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Providers>`n          <CosmicBackground />
-          <header className="flex items-center gap-3 p-4 border-b border-gray-200">
-            <Link href="/" className="flex items-center gap-2">
+          <header className="relative flex items-center gap-3 p-4 border-b border-gray-200">
+            <Link href="/" className="relative flex items-center gap-2">
               <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
               <span className="font-semibold hover:underline">Camuverse</span>
             </Link>
             <nav className="ml-auto flex items-center gap-4">
-              <Link href="/docs/pdf" className="text-sm text-white/90 hover:text-white underline decoration-white/60">Whitepaper</Link>
               <WaitlistControl />
               <HeaderWalletButton />
             </nav>
@@ -56,6 +55,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 

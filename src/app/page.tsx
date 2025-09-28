@@ -55,7 +55,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + dao.address}
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-mono underline break-all text-white/90"
+              className="text-sm font-mono underline break-all text-white/90 ml-2"
             >
               {dao.address}
             </a>
@@ -69,7 +69,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + wrapper.address}
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-mono underline break-all text-white/90"
+              className="text-sm font-mono underline break-all text-white/90 ml-2"
             >
               {wrapper.address}
             </a>
@@ -153,12 +153,12 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   if (!validSbt) return null
   return (
     <div className="panel-glass rounded-lg p-4">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between gap-3 mb-2">
         <h2 className="text-lg font-medium">Subscriber Badge Token</h2>
         <a
           href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + sbt.address}
           target="_blank" rel="noreferrer"
-          className="text-sm font-mono underline break-all text-white/90"
+          className="text-sm font-mono underline break-all text-white/90 ml-2"
         >
           {sbt.address}
         </a>
@@ -172,7 +172,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
               <>
                 {' '}{String(localSubNo ?? Number(subNo || 0))}{' '}
                 <a
-                  className="text-sm font-mono underline break-all text-white/90"
+                  className="text-sm font-mono underline break-all text-white/90 ml-2"
                   href={
                     (chainId === 84532 ? 'https://sepolia.basescan.org' : 'https://basescan.org') +
                     '/nft/' + sbt.address + '/' + String(localSubNo ?? Number(subNo || 0))
@@ -282,12 +282,13 @@ function FooterContact() {
       <div className="flex items-center justify-center flex-wrap gap-3">
         <span>
           Contact: {" "}
-          <a href="mailto:info@camuverse.io" className="text-sm font-mono underline break-all text-white/90">info@camuverse.io</a>
+          <a href="mailto:info@camuverse.io" className="text-sm font-mono underline break-all text-white/90 ml-2">info@camuverse.io</a>
         </span>
       </div>
     </footer>
   )
 }
+
 
 
 
