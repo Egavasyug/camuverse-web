@@ -1,4 +1,9 @@
 import { NextResponse } from 'next/server'
+
+// Ensure Node.js runtime on Vercel and allow longer execution for on-chain receipts
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 import { createPublicClient, createWalletClient, http, decodeEventLog, getAddress, type Hex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { base } from 'viem/chains'
