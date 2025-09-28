@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Abi } from "viem"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from eact"
 import type React from 'react'
 import Link from 'next/link'
 import { loadManifest, type Manifest } from "@/lib/manifest"
@@ -55,7 +55,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
             <a
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + dao.address}
               target="_blank"
-              rel="noreferrer"
+              rel=oreferrer"
               className="text-sm font-mono underline break-all text-white/90 ml-2"
             >
               {dao.address}
@@ -69,7 +69,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
             <a
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + wrapper.address}
               target="_blank"
-              rel="noreferrer"
+              rel=oreferrer"
               className="text-sm font-mono underline break-all text-white/90 ml-2"
             >
               {wrapper.address}
@@ -104,9 +104,9 @@ function GetVerifiedNotice() {
   const { address } = useAccount()
   if (!address) return null
   return (
-    <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 p-3 text-sm flex items-center justify-between">
+    <div className=ounded-md border border-amber-300 bg-amber-50 text-amber-900 p-3 text-sm flex items-center justify-between">
       <span>Verification status: Not verified (CamuVerify placeholder)</span>
-      <Link href="/verify" className="rounded bg-amber-600 text-white px-3 py-1.5 text-xs hover:bg-amber-700">Get Verified</Link>
+      <Link href="/verify" className=ounded bg-amber-600 text-white px-3 py-1.5 text-xs hover:bg-amber-700">Get Verified</Link>
     </div>
   )
 }
@@ -160,7 +160,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
         <h2 className="text-lg font-medium">Subscriber Badge Token</h2>
         <a
           href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + sbt.address}
-          target="_blank" rel="noreferrer"
+          target="_blank" rel=oreferrer"
           className="text-sm font-mono underline break-all text-white/90 ml-2"
         >
           {sbt.address}
@@ -181,7 +181,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                     '/nft/' + sbt.address + '/' + String(localSubNo ?? Number(subNo || 0))
                   }
                   target="_blank"
-                  rel="noreferrer"
+                  rel=oreferrer"
                 >
                   View on Basescan
                 </a>
@@ -245,7 +245,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
                   setToastDetails(String((e as any)?.stack || (e as any)?.message || e))
                 }
               }}
-              className="rounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
+              className=ounded-md bg-blue-600 text-white text-xs px-3 py-1.5 hover:bg-blue-700 disabled:opacity-50"
             >
               {isPending ? 'Claiming...' : (gasless && forwarder ? 'Claim Gasless' : 'Claim Badge')}
             </button>
@@ -284,13 +284,15 @@ function FooterContact() {
     <footer className="mt-12 border-t border-gray-200 pt-4 text-sm text-gray-600">
       <div className="flex items-center justify-center flex-wrap gap-3">
         <span>
-          <span class="text-sm font-mono text-white/90">Contact:</span> {" "}
+          <span className="text-sm font-mono text-white/90">Contact:</span> {" "}
           <a href="mailto:info@camuverse.io" className="text-sm font-mono underline break-all text-white/90 ml-2">info@camuverse.io</a>
         </span>
       </div>
     </footer>
   )
 }
+
+
 
 
 
