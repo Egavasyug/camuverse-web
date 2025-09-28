@@ -11,11 +11,12 @@ export function ConnectModalButton() {
   const { login } = usePrivy()
   const [open, setOpen] = useState(false)
   const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  const providerList: EthProvider[] = (typeof window !== 'undefined' ? ((window.ethereum?.providers ?? []) as EthProvider[]) : [])
   const hasMetaMask = typeof window !== 'undefined' && !!(
-    window.ethereum?.isMetaMask || window.ethereum?.providers?.some((p) => p?.isMetaMask)
+    window.ethereum?.isMetaMask || providerList.some((p: EthProvider) => !!p.isMetaMask)
   )
   const hasCoinbaseExt = typeof window !== 'undefined' && !!(
-    window.coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet || window.ethereum?.providers?.some((p) => p?.isCoinbaseWallet)
+    (window as any).coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet || providerList.some((p: EthProvider) => !!p.isCoinbaseWallet)
   )
 
   const injected = connectors.find(
