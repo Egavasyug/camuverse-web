@@ -16,9 +16,9 @@ export default function Home() {
   useEffect(() => { loadManifest().then(setManifest).catch(console.error) }, [])
 
   return (
-    <main className="min-h-dvh p-6 space-y-6">
+    <main className="min-h-dvh p-6 space-y-8 flex flex-col items-center">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Camuverse: Enabling decentralized creator monetization!</h1></div>
+        <h1 className="text-2xl font-semibold" className="hero-title">Camuverse: Enabling decentralized creator monetization!</h1></div>
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -83,7 +83,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-gray-200 p-4 bg-white/50 dark:bg-zinc-900/50">
+    <div className="panel-glass rounded-lg p-4">
       <h2 className="text-lg font-medium mb-3">{title}</h2>
       <div className="space-y-2">{children}</div>
     </div>
@@ -154,7 +154,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
 
   if (!validSbt) return null
   return (
-    <div className="rounded-lg border border-gray-200 p-4 bg-white/50 dark:bg-zinc-900/50">
+    <div className="panel-glass rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-medium">Subscriber Badge Token</h2>
         <a
@@ -290,6 +290,8 @@ function FooterContact() {
     </footer>
   )
 }
+
+
 
 
 

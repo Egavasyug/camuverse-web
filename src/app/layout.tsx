@@ -5,6 +5,8 @@ import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
 import { HeaderWalletButton } from '@/components/HeaderWalletButton'
+import dynamic from 'next/dynamic'
+const CosmicBackground = dynamic(() => import('@/components/CosmicBackground'), { ssr: false })
 import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
@@ -35,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Web3Providers>
+        <Web3Providers>`n          <CosmicBackground />
           <header className="flex items-center gap-3 p-4 border-b border-gray-200">
             <Link href="/" className="flex items-center gap-2">
               <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
@@ -47,7 +49,7 @@ export default function RootLayout({
               <HeaderWalletButton />
             </nav>
           </header>
-          <main>
+          <main className="relative z-10">
             {children}
           </main>
         </Web3Providers>
@@ -55,5 +57,6 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
