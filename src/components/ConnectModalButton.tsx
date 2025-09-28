@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { useConnect } from 'wagmi'
 import { usePrivy } from '@privy-io/react-auth'
 
-type MaybeReady = { ready?: boolean }
+type MaybeReady = { ready?: boolean }\n\ntype EthProvider = { isMetaMask?: boolean; isCoinbaseWallet?: boolean }
+
+declare global { interface Window { ethereum?: EthProvider & { providers?: EthProvider[] }; coinbaseWalletExtension?: unknown } }
 
 export function ConnectModalButton() {
   const { connectors, connect, isPending } = useConnect()
@@ -103,3 +105,4 @@ export function ConnectModalButton() {
     </>
   )
 }
+
