@@ -43,7 +43,7 @@ export default function RootLayout({
               <span className="font-semibold hover:underline">Camuverse</span>
             </Link>
             <nav className="ml-auto flex items-center gap-4">
-              <Link href="/docs/pdf" className="text-sm text-blue-600 hover:underline">Whitepaper</Link>
+              <Link href="/docs/pdf" className="text-sm text-white/90 hover:text-white underline decoration-white/60">Whitepaper</Link>
               <WaitlistControl />
               <HeaderWalletButton />
             </nav>
@@ -56,6 +56,8 @@ export default function RootLayout({
     </html>
   );
 }
+
+
 
 
 

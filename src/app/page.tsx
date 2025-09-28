@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-8 flex flex-col items-center">
       <div className="flex items-center justify-between">
-        <h1 className="hero-title text-2xl font-semibold hero-title">Camuverse: Enabling decentralized creator monetization!</h1></div>
+        <h1 className="hero-title text-2xl font-semibold text-center">Camuverse: Enabling decentralized creator monetization!</h1></div>`r`n      <div className="mt-2 flex justify-center"><a href="/docs/pdf" className="inline-block rounded bg-[#d4af37] text-black px-4 py-1.5 text-sm font-medium hover:brightness-110">Whitepaper</a></div>
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -55,7 +55,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + dao.address}
               target="_blank"
               rel="noreferrer"
-              className="underline"
+              className="text-sm font-mono underline break-all text-white/90"
             >
               {dao.address}
             </a>
@@ -69,7 +69,7 @@ function Dashboard({ manifest }: { manifest: Manifest }) {
               href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + wrapper.address}
               target="_blank"
               rel="noreferrer"
-              className="underline"
+              className="text-sm font-mono underline break-all text-white/90"
             >
               {wrapper.address}
             </a>
@@ -92,9 +92,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-mono break-all">{value}</span>
+    <div className="flex items-center justify-between gap-3 text-sm">`r`n      <span className="text-white/70">{label}</span>`r`n      <span className="font-mono break-all text-white">{value}</span>
     </div>
   )
 }
@@ -160,7 +158,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
         <a
           href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + sbt.address}
           target="_blank" rel="noreferrer"
-          className="text-sm font-mono underline break-all"
+          className="text-sm font-mono underline break-all text-white/90"
         >
           {sbt.address}
         </a>
@@ -174,7 +172,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
               <>
                 {' '}{String(localSubNo ?? Number(subNo || 0))}{' '}
                 <a
-                  className="underline"
+                  className="text-sm font-mono underline break-all text-white/90"
                   href={
                     (chainId === 84532 ? 'https://sepolia.basescan.org' : 'https://basescan.org') +
                     '/nft/' + sbt.address + '/' + String(localSubNo ?? Number(subNo || 0))
@@ -284,12 +282,13 @@ function FooterContact() {
       <div className="flex items-center justify-center flex-wrap gap-3">
         <span>
           Contact: {" "}
-          <a href="mailto:info@camuverse.io" className="underline">info@camuverse.io</a>
+          <a href="mailto:info@camuverse.io" className="text-sm font-mono underline break-all text-white/90">info@camuverse.io</a>
         </span>
       </div>
     </footer>
   )
 }
+
 
 
 
