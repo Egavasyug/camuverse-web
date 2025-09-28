@@ -18,7 +18,8 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-8 flex flex-col items-center">
       <div className="flex items-center justify-between">
-        <h1 className="hero-title text-2xl font-semibold text-center">Camuverse: Enabling decentralized creator monetization!</h1></div>`r`n      <div className="mt-2 flex justify-center"><a href="/docs/pdf" className="inline-block rounded bg-[#d4af37] text-black px-4 py-1.5 text-sm font-medium hover:brightness-110">Whitepaper</a></div>
+        <h1 className="hero-title text-2xl font-semibold text-center">Camuverse: Enabling decentralized creator monetization!</h1>
+      </div>
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
