@@ -6,13 +6,6 @@ import { usePrivy } from '@privy-io/react-auth'
 
 type EthProvider = { isMetaMask?: boolean; isCoinbaseWallet?: boolean }
 
-declare global {
-  interface Window {
-    ethereum?: EthProvider & { providers?: EthProvider[] }
-    coinbaseWalletExtension?: unknown
-  }
-}
-
 export function ConnectModalButton() {
   const { connectors, connect, isPending } = useConnect()
   const { login } = usePrivy()
@@ -120,3 +113,5 @@ export function ConnectModalButton() {
     </>
   )
 }
+
+
