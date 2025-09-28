@@ -16,7 +16,7 @@ export function ConnectModalButton() {
     window.ethereum?.isMetaMask || providerList.some((p: EthProvider) => !!p.isMetaMask)
   )
   const hasCoinbaseExt = typeof window !== 'undefined' && !!(
-    (window as any).coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet || providerList.some((p: EthProvider) => !!p.isCoinbaseWallet)
+    (window as unknown as { coinbaseWalletExtension?: unknown }).coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet || providerList.some((p: EthProvider) => !!p.isCoinbaseWallet)
   )
 
   const injected = connectors.find(
@@ -114,5 +114,6 @@ export function ConnectModalButton() {
     </>
   )
 }
+
 
 
