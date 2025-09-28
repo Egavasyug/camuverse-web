@@ -10,6 +10,7 @@ export function ConnectModalButton() {
   const { connectors, connect, isPending } = useConnect()
   const { login } = usePrivy()
   const [open, setOpen] = useState(false)
+  const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
 
   const injected = connectors.find(
     (c) => c.id === 'injected' || c.name.toLowerCase().includes('injected') || c.name.toLowerCase().includes('metamask') || c.name.toLowerCase().includes('rabby')
@@ -22,11 +23,15 @@ export function ConnectModalButton() {
   )
 
   async function handleClick() {
+    // Desktop: prefer injected/Coinbase; Mobile: fall back to WalletConnect if available
     if (injected) {
-      try { await connect({ connector: injected }); return } catch { /* ignore */ }
+      try { await connect({ connector: injected }); return } catch { /* continue */ }
     }
     if (coinbase && Boolean((coinbase as MaybeReady | undefined)?.ready)) {
-      try { await connect({ connector: coinbase }); return } catch { /* ignore */ }
+      try { await connect({ connector: coinbase }); return } catch { /* continue */ }
+    }
+    if (isMobile && wc) {
+      try { await connect({ connector: wc }); return } catch { /* show modal below */ }
     }
     setOpen(true)
   }
