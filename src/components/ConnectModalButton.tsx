@@ -4,9 +4,14 @@ import { useState } from 'react'
 import { useConnect } from 'wagmi'
 import { usePrivy } from '@privy-io/react-auth'
 
-type MaybeReady = { ready?: boolean }\n\ntype EthProvider = { isMetaMask?: boolean; isCoinbaseWallet?: boolean }
+type EthProvider = { isMetaMask?: boolean; isCoinbaseWallet?: boolean }
 
-declare global { interface Window { ethereum?: EthProvider & { providers?: EthProvider[] }; coinbaseWalletExtension?: unknown } }
+declare global {
+  interface Window {
+    ethereum?: EthProvider & { providers?: EthProvider[] }
+    coinbaseWalletExtension?: unknown
+  }
+}
 
 export function ConnectModalButton() {
   const { connectors, connect, isPending } = useConnect()
@@ -14,10 +19,10 @@ export function ConnectModalButton() {
   const [open, setOpen] = useState(false)
   const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
   const hasMetaMask = typeof window !== 'undefined' && !!(
-    (window as any).ethereum?.isMetaMask || (window as any).ethereum?.providers?.some((p: any) => p?.isMetaMask)
+    window.ethereum?.isMetaMask || window.ethereum?.providers?.some((p) => p?.isMetaMask)
   )
   const hasCoinbaseExt = typeof window !== 'undefined' && !!(
-    (window as any).coinbaseWalletExtension || (window as any).ethereum?.isCoinbaseWallet || (window as any).ethereum?.providers?.some((p: any) => p?.isCoinbaseWallet)
+    window.coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet || window.ethereum?.providers?.some((p) => p?.isCoinbaseWallet)
   )
 
   const injected = connectors.find(
@@ -105,4 +110,3 @@ export function ConnectModalButton() {
     </>
   )
 }
-
