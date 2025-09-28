@@ -5,8 +5,7 @@ import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
 import Link from 'next/link'
 import { HeaderWalletButton } from '@/components/HeaderWalletButton'
-import dynamic from 'next/dynamic'
-const CosmicBackground = dynamic(() => import('@/components/CosmicBackground'), { ssr: false })
+import CosmicBackground from '@/components/CosmicBackground'
 import { WaitlistControl } from '@/components/WaitlistControl'
 import logoPng from '../../public/logo.png'
 
@@ -57,6 +56,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 

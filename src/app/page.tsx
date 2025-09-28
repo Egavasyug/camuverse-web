@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-8 flex flex-col items-center">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold" className="hero-title">Camuverse: Enabling decentralized creator monetization!</h1></div>
+        <h1 className="hero-title text-2xl font-semibold hero-title">Camuverse: Enabling decentralized creator monetization!</h1></div>
       <GetVerifiedNotice />
       <SubscriberPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -290,6 +290,7 @@ function FooterContact() {
     </footer>
   )
 }
+
 
 
 
