@@ -160,7 +160,7 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
         <a
           href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + sbt.address}
           target="_blank" rel="noreferrer"
-          className="text-xs text-gray-600 font-mono underline break-all"
+          className="text-sm font-mono underline break-all"
         >
           {sbt.address}
         </a>
@@ -290,6 +290,7 @@ function FooterContact() {
     </footer>
   )
 }
+
 
 
 
