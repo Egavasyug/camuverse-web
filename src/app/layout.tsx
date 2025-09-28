@@ -1,5 +1,5 @@
-﻿import type { Metadata } from ext";
-import { Geist, Geist_Mono } from ext/font/google";
+﻿import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Providers } from "@/lib/wagmi";
 import Image from 'next/image'
@@ -38,8 +38,8 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Providers>
           <CosmicBackground />
-          <header className=elative flex items-center gap-3 p-4 border-b border-gray-200">
-            <Link href="/" className=elative flex items-center gap-2">
+          <header className="relative flex items-center gap-3 p-4 border-b border-gray-200">
+            <Link href="/" className="relative flex items-center gap-2">
               <Image src={logoPng} alt="Camuverse" width={32} height={32} priority />
               <span className="font-semibold hover:underline">Camuverse</span>
             </Link>
@@ -51,7 +51,7 @@ export default function RootLayout({
               <HeaderWalletButton />
             </nav>
           </header>
-          <main className=elative z-10">
+          <main className="relative z-10">
             {children}
           </main>
         </Web3Providers>
@@ -59,6 +59,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 
