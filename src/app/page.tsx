@@ -93,7 +93,9 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm">`r`n      <span className="text-white/70">{label}</span>`r`n      <span className="font-mono break-all text-white">{value}</span>
+    <div className="flex items-center justify-between gap-3 text-sm">
+      <span className="text-white/70">{label}</span>
+      <span className="font-mono break-all text-white">{value}</span>
     </div>
   )
 }
@@ -282,13 +284,15 @@ function FooterContact() {
     <footer className="mt-12 border-t border-gray-200 pt-4 text-sm text-gray-600">
       <div className="flex items-center justify-center flex-wrap gap-3">
         <span>
-          Contact: {" "}
+          <span class="text-sm font-mono text-white/90">Contact:</span> {" "}
           <a href="mailto:info@camuverse.io" className="text-sm font-mono underline break-all text-white/90 ml-2">info@camuverse.io</a>
         </span>
       </div>
     </footer>
   )
 }
+
+
 
 
 
