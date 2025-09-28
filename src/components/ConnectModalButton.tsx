@@ -35,20 +35,8 @@ export function ConnectModalButton() {
     (c) => c.id === 'walletConnect' || c.name.toLowerCase().includes('walletconnect')
   )
 
-  async function handleClick() {
-    // Desktop: only connect injected if MetaMask is detected (avoid store redirects)
-    if (!isMobile && hasMetaMask && injected) {
-      try { await connect({ connector: injected }); return } catch { /* continue */ }
-    }
-    // Coinbase: only connect if extension detected
-    if (!isMobile && hasCoinbaseExt && coinbase) {
-      try { await connect({ connector: coinbase }); return } catch { /* continue */ }
-    }
-    // Mobile: prefer WalletConnect flow
-    if (isMobile && wc) {
-      try { await connect({ connector: wc }); return } catch { /* show modal below */ }
-    }
-    // Fallback
+  function handleClick() {
+    // Always show a clear choice; avoid automatic redirects
     setOpen(true)
   }
 
@@ -71,30 +59,52 @@ export function ConnectModalButton() {
               <button className="text-xs text-gray-500 hover:text-gray-700" onClick={() => setOpen(false)}>Close</button>
             </div>
             <div className="space-y-2 text-sm">
-              <a
-                href="https://metamask.io/download/"
-                target="_blank"
-                rel="noreferrer"
-                className="block w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-center hover:bg-zinc-800"
-              >
-                Install MetaMask
-              </a>
-              <a
-                href="https://www.coinbase.com/wallet/downloads/browser-extension"
-                target="_blank"
-                rel="noreferrer"
-                className="block w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-center hover:bg-zinc-800"
-              >
-                Get Coinbase Wallet
-              </a>
+              {hasMetaMask && injected && (
+                <button
+                  onClick={() => { connect({ connector: injected }); setOpen(false) }}
+                  disabled={isPending}
+                  className="w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-sm hover:bg-zinc-800 disabled:opacity-50"
+                >
+                  Connect MetaMask
+                </button>
+              )}
+              {hasCoinbaseExt && coinbase && (
+                <button
+                  onClick={() => { connect({ connector: coinbase }); setOpen(false) }}
+                  disabled={isPending}
+                  className="w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-sm hover:bg-zinc-800 disabled:opacity-50"
+                >
+                  Connect Coinbase Wallet
+                </button>
+              )}
               {wc && (
                 <button
                   onClick={() => { connect({ connector: wc }); setOpen(false) }}
                   disabled={isPending}
                   className="w-full rounded bg-zinc-900 text-white px-3 py-1.5 text-sm hover:bg-zinc-800 disabled:opacity-50"
                 >
-                  More wallet options (WalletConnect)
+                  Connect with WalletConnect
                 </button>
+              )}
+              {!isMobile && !hasMetaMask && (
+                <a
+                  href="https://metamask.io/download/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block w-full rounded border border-zinc-300 px-3 py-1.5 text-center hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                >
+                  Install MetaMask
+                </a>
+              )}
+              {!isMobile && !hasCoinbaseExt && (
+                <a
+                  href="https://www.coinbase.com/wallet/downloads/browser-extension"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block w-full rounded border border-zinc-300 px-3 py-1.5 text-center hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                >
+                  Get Coinbase Wallet
+                </a>
               )}
               <div className="pt-1" />
               <button
