@@ -22,7 +22,7 @@
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "viem": "^2.37.5",
-        "wagmi": "^2.16.9"
+        "wagmi": "^2.19.4"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
