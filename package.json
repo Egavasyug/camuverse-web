@@ -21,8 +21,8 @@
         "next": "15.5.3",
         "react": "19.1.0",
         "react-dom": "19.1.0",
-        "viem": "^2.37.5",
-        "wagmi": "^2.16.9"
+        "viem": "^2.39.0",
+        "wagmi": "^2.19.4"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
@@ -42,16 +42,16 @@
         "tailwindcss": "^4",
         "typescript": "^5"
     },
-  "engines": {
-    "node": ">=18.18",
-    "npm": ">=9"
-  },
-  "overrides": {
-    "lucide-react": "^0.544.0",
-    "use-sync-external-store": "^1.5.0",
-    "@privy-io/react-auth": {
-      "lucide-react": "^0.544.0",
-      "use-sync-external-store": "^1.5.0"
+    "engines": {
+        "node": ">=18.18",
+        "npm": ">=9"
+    },
+    "overrides": {
+        "lucide-react": "^0.544.0",
+        "use-sync-external-store": "^1.5.0",
+        "@privy-io/react-auth": {
+            "lucide-react": "^0.544.0",
+            "use-sync-external-store": "^1.5.0"
+        }
     }
-  }
 }
