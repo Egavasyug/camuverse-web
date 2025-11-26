@@ -48,3 +48,31 @@ export async function buildClaimForwardRequest(opts: {
   return { request, domain, types }
 }
 
+export async function buildFollowForwardRequest(opts: {
+  account: `0x${string}`
+  creator: `0x${string}`
+  follower: `0x${string}`
+  hubAddress: `0x${string}`
+  hubAbi: Abi
+  forwarder: `0x${string}`
+  chainId: number
+  publicClient: PublicClient
+  gas?: bigint
+  feeWei?: bigint
+}): Promise<{ request: ForwardRequest; domain: { name: 'MinimalForwarder'; version: '0.0.1'; chainId: number; verifyingContract: `0x${string}` }; types: typeof forwarderTypes }> {
+  const { hubAbi, chainId, publicClient } = opts
+  const account = getAddress(opts.account) as `0x${string}`
+  const creator = getAddress(opts.creator) as `0x${string}`
+  const follower = getAddress(opts.follower) as `0x${string}`
+  const hubAddress = getAddress(opts.hubAddress) as `0x${string}`
+  const forwarder = getAddress(opts.forwarder) as `0x${string}`
+  const gas = opts.gas ?? BigInt(300000)
+  const value = opts.feeWei ?? BigInt(0)
+  const nonce = await publicClient.readContract({ address: forwarder, abi: minimalForwarderAbi, functionName: 'getNonce', args: [account] }) as bigint
+  const data = encodeFunctionData({ abi: hubAbi, functionName: 'mintFollower', args: [creator, follower] })
+  const request: ForwardRequest = { from: account, to: hubAddress, value, gas, nonce, data }
+  const domain = { name: 'MinimalForwarder', version: '0.0.1', chainId, verifyingContract: forwarder } as const
+  const types = forwarderTypes
+  return { request, domain, types }
+}
+

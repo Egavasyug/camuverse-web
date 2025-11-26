@@ -21,7 +21,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Camuverse",
-  description: "Camuverse frontend",
+  description: "Camuverse is the decentralized creator economy DAO on Web3 — verified creators, fan tokens, and subscriber gating powered by CTDSG.",
+  openGraph: {
+    siteName: "Camuverse.io - The Decentralized Creator Economy DAO",
+    url: "https://camuverse.io",
+    type: "website",
+    description: "Camuverse is the decentralized creator economy DAO on Web3 - verified creators, fan tokens, and subscriber gating powered by CTDSG.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@Camuverse_io",
+    creator: "@Camuverse_io",
+  },
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-icon.png"
