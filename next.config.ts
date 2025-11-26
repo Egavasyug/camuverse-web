@@ -9,13 +9,15 @@ const nextConfig: NextConfig = {
       ...(config.resolve.alias || {}),
       'pino-pretty': false,
       'pino-abstract-transport': false,
-      'sonic-boom': false
+      'sonic-boom': false,
+      '@react-native-async-storage/async-storage': false
     }
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       /pino-pretty/,
       /pino-abstract-transport/,
-      /sonic-boom/
+      /sonic-boom/,
+      /@react-native-async-storage/
     ]
     return config
   }
