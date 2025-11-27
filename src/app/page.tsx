@@ -37,7 +37,7 @@ export default function Home() {
 
 function BusinessNotice() {
   return (
-    <div className="w-full max-w-3xl panel-glass rounded-lg p-4 text-sm text-white/90 text-center">
+    <div className="w-full max-w-3xl mx-auto panel-glass rounded-lg p-4 text-sm text-white/90 text-center">
       <p className="font-semibold">Operated by Cammunity DAO LLC</p>
       <p>Contact: <a href="mailto:info@camuverse.io" className="underline">info@camuverse.io</a></p>
     </div>
