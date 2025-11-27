@@ -20,12 +20,15 @@ export default function Home() {
   return (
     <main className="min-h-dvh p-6 space-y-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-center">
-        <h1 className="hero-title text-2xl font-semibold text-center">Camuverse: Enabling decentralized creator monetization!</h1>
+        <div className="text-center space-y-2">
+          <h1 className="hero-title text-2xl font-semibold">Camuverse: Enabling decentralized creator monetization!</h1>
+          <p className="text-sm text-white/80">Powered by Creator Token Decentralized Subscriber Gating (CTDSG).</p>
+        </div>
       </div>
       <BusinessNotice />
-      <GetVerifiedNotice />
-      <VerificationRequirements />
       <SubscriberPanel manifest={manifest} />
+      <VerificationRequirements />
+      <GetVerifiedNotice />
       <CreatorFollowerPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
       <FooterContact />
