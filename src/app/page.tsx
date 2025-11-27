@@ -313,15 +313,18 @@ function CreatorFollowerPanel({ manifest }: { manifest: Manifest | null }) {
   const hub = manifest ? (manifest.contracts as any).CreatorFollowerHub as Cfg | undefined : undefined
   return (
     <div className="panel-glass rounded-lg p-4 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h2 className="text-lg font-medium">Creator Followers</h2>
           <p className="text-sm text-white/80">
-            Set your fee/policy and let fans follow you. Adult policy requires age verification.
+            Fans: follow creators and mint their follower SBTs. Creators: set your fee/policy and metadata first.
           </p>
           {hub && <p className="text-xs text-white/70 mt-1">Hub: {hub.address}</p>}
         </div>
-        <Link href="/follow" className="rounded bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700">Go to followers</Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/follow" className="rounded bg-green-600 text-white px-4 py-2 text-sm font-medium hover:bg-green-700">Follow a creator</Link>
+          <Link href="/creator/followers" className="rounded bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700">Creator config</Link>
+        </div>
       </div>
     </div>
   )
