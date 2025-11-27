@@ -9,7 +9,9 @@ import { loadManifest, type Manifest } from "@/lib/manifest"
 import { useAccount, useReadContract, useWriteContract, usePublicClient, useWalletClient, useChainId } from "wagmi"
 import { buildClaimForwardRequest, buildFollowForwardRequest } from "@/lib/metaTx"
 import { creatorFollowerHubAbi } from "@/lib/abi/creatorFollowerHub"
-import { parseEther } from "viem"
+import { parseEther, formatEther } from "viem"
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 type Cfg = { address: `0x${string}`; abi: Abi }
 
@@ -18,12 +20,13 @@ export default function Home() {
   useEffect(() => { loadManifest().then(setManifest).catch(console.error) }, [])
 
   return (
-    <main className="min-h-dvh p-6 space-y-8 flex flex-col items-center">
-      <div className="flex items-center justify-between">
+    <main className="min-h-dvh p-6 space-y-8 max-w-6xl mx-auto">
+      <div className="flex items-center justify-center">
         <h1 className="hero-title text-2xl font-semibold text-center">Camuverse: Enabling decentralized creator monetization!</h1>
       </div>
       <BusinessNotice />
       <GetVerifiedNotice />
+      <VerificationRequirements />
       <SubscriberPanel manifest={manifest} />
       <CreatorFollowerPanel manifest={manifest} />
       {manifest ? <Dashboard manifest={manifest} /> : <div>Loading manifest?</div>}
@@ -124,6 +127,22 @@ function GetVerifiedNotice() {
   )
 }
 
+function VerificationRequirements() {
+  return (
+    <div className="panel-glass rounded-lg p-4 text-sm w-full">
+      <h2 className="text-base font-semibold mb-2">Verification & requirements</h2>
+      <ul className="list-disc list-inside space-y-1 text-white/80">
+        <li>All users need the Camuverse Subscriber Badge (SBT) to interact.</li>
+        <li>Creators must hold the SBT to set their follower config.</li>
+        <li>Adult creators (policy 1) must be age-verified in CamuVerify; their followers must also be adult-verified.</li>
+      </ul>
+      <div className="mt-2 text-xs text-white/70">
+        <Link href="/verify" className="underline">Go to verification</Link> (Polygon ID/credential flow coming soon).
+      </div>
+    </div>
+  )
+}
+
 function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   const { address } = useAccount()
   const chainId = useChainId()
@@ -131,23 +150,22 @@ function SubscriberPanel({ manifest }: { manifest: Manifest | null }) {
   const { data: walletClient } = useWalletClient()
   const { writeContract, isPending } = useWriteContract()
   const sbt: Cfg | undefined = manifest ? (manifest.contracts as any).EarlyAccessSBT : undefined
-  const zero = '0x0000000000000000000000000000000000000000'
-  const validSbt = !!(sbt && sbt.address.toLowerCase() !== zero)
+  const validSbt = !!(sbt && sbt.address.toLowerCase() !== ZERO_ADDRESS)
   const enabled = !!(validSbt && address)
 
   const { data: hasBadge, refetch } = useReadContract({
-    address: (validSbt ? (sbt as Cfg).address : zero) as `0x${string}`,
+    address: (validSbt ? (sbt as Cfg).address : ZERO_ADDRESS) as `0x${string}`,
     abi: (validSbt ? (sbt as Cfg).abi : []) as any,
     functionName: 'hasClaimed' as any,
-    args: [(address ?? '0x0000000000000000000000000000000000000000') as `0x${string}`],
+    args: [(address ?? ZERO_ADDRESS) as `0x${string}`],
     query: { enabled },
   })
 
   const { data: subNo, refetch: refetchSub } = useReadContract({
-    address: (validSbt ? (sbt as Cfg).address : zero) as `0x${string}`,
+    address: (validSbt ? (sbt as Cfg).address : ZERO_ADDRESS) as `0x${string}`,
     abi: (validSbt ? (sbt as Cfg).abi : []) as any,
     functionName: 'getSubscriberNo' as any,
-    args: [(address ?? '0x0000000000000000000000000000000000000000') as `0x${string}`],
+    args: [(address ?? ZERO_ADDRESS) as `0x${string}`],
     query: { enabled },
   })
 
@@ -298,12 +316,31 @@ function CreatorFollowerPanel({ manifest }: { manifest: Manifest | null }) {
   const { writeContract, isPending } = useWriteContract()
 
   const hub = manifest ? (manifest.contracts as any).CreatorFollowerHub as Cfg | undefined : undefined
+  const hubAddress = hub?.address ?? ZERO_ADDRESS
   const forwarder = (process.env.NEXT_PUBLIC_FORWARDER_ADDRESS || '').trim()
+  const validHub = hubAddress !== ZERO_ADDRESS
   const [feeInput, setFeeInput] = useState('0')
   const [policyId, setPolicyId] = useState(0)
   const [uri, setUri] = useState('')
   const [creatorAddr, setCreatorAddr] = useState('')
   const [toast, setToast] = useState<string | null>(null)
+  const creatorAddrValid = creatorAddr.trim().startsWith('0x') && creatorAddr.trim().length === 42
+
+  const { data: myConfig } = useReadContract({
+    address: hubAddress as `0x${string}`,
+    abi: creatorFollowerHubAbi as any,
+    functionName: 'creatorConfig',
+    args: [(address ?? ZERO_ADDRESS) as `0x${string}`],
+    query: { enabled: validHub && !!address },
+  })
+
+  const { data: creatorConfigData } = useReadContract({
+    address: hubAddress as `0x${string}`,
+    abi: creatorFollowerHubAbi as any,
+    functionName: 'creatorConfig',
+    args: [(creatorAddrValid ? creatorAddr : ZERO_ADDRESS) as `0x${string}`],
+    query: { enabled: validHub && creatorAddrValid },
+  })
 
   useEffect(() => {
     if (!toast) return
@@ -311,26 +348,47 @@ function CreatorFollowerPanel({ manifest }: { manifest: Manifest | null }) {
     return () => clearTimeout(t)
   }, [toast])
 
+  useEffect(() => {
+    if (!myConfig) return
+    const [feeWei, pol, uriStr] = myConfig as unknown as [bigint, number, string, boolean]
+    setFeeInput(formatEther(feeWei || BigInt(0)))
+    setPolicyId(Number(pol || 0))
+    setUri(uriStr || '')
+  }, [myConfig])
+
   if (!hub) return null
-  const validHub = hub.address && hub.address !== '0x0000000000000000000000000000000000000000'
 
   return (
-    <div className="panel-glass rounded-lg p-4 w-full">
-      <div className="flex items-center justify-between gap-3 mb-2">
+    <div className="panel-glass rounded-lg p-5 w-full space-y-4">
+      <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-medium">Creator Followers</h2>
-        <span className="text-xs font-mono text-white/80">{hub.address}</span>
       </div>
-      {!validHub && <p className="text-sm text-red-500">Follower hub not configured (manifest hub address is zero).</p>}
       {validHub && (
-        <div className="space-y-3 text-sm">
-          <p className="font-semibold">Set your config</p>
-          <div className="flex flex-wrap gap-2">
-            <input className="border px-2 py-1 rounded w-32" placeholder="Fee (ETH)" value={feeInput} onChange={(e) => setFeeInput(e.target.value)} />
-            <select className="border px-2 py-1 rounded" value={policyId} onChange={(e) => setPolicyId(Number(e.target.value))}>
-              <option value={0}>SBT gate</option>
-              <option value={1}>SBT + Adult</option>
-            </select>
-            <input className="border px-2 py-1 rounded flex-1" placeholder="Metadata URI" value={uri} onChange={(e) => setUri(e.target.value)} />
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-white/70">Hub Address</span>
+          <a
+            className="text-sm font-mono underline break-all text-white/90 ml-1"
+            href={(chainId === 84532 ? 'https://sepolia.basescan.org/address/' : 'https://basescan.org/address/') + hub.address}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {hub.address}
+          </a>
+        </div>
+      )}
+      {!validHub && <p className="text-sm text-red-400">Follower hub not configured (manifest hub address is zero).</p>}
+      {validHub && (
+        <div className="grid gap-4 md:grid-cols-2 text-sm">
+          <div className="space-y-2">
+            <p className="font-semibold">Set your config (creator only)</p>
+            <div className="flex flex-wrap gap-2">
+              <input className="border px-2 py-1 rounded w-32" placeholder="Fee (ETH)" value={feeInput} onChange={(e) => setFeeInput(e.target.value)} />
+              <select className="border px-2 py-1 rounded" value={policyId} onChange={(e) => setPolicyId(Number(e.target.value))}>
+                <option value={0}>SBT gate</option>
+                <option value={1}>SBT + Adult</option>
+              </select>
+              <input className="border px-2 py-1 rounded flex-1" placeholder="Metadata URI" value={uri} onChange={(e) => setUri(e.target.value)} />
+            </div>
             <button
               className="rounded bg-blue-600 text-white px-3 py-1 disabled:opacity-50"
               disabled={!address || isPending}
@@ -350,67 +408,84 @@ function CreatorFollowerPanel({ manifest }: { manifest: Manifest | null }) {
                 }
               }}
             >
-              Save
+              Save config
             </button>
+            <p className="text-xs text-white/70">Policy 0 = SBT only. Policy 1 = SBT + adult verification for both creator and follower. Fees must match exactly.</p>
           </div>
 
-          <p className="font-semibold pt-2">Follow a creator (gasless)</p>
-          <div className="flex flex-wrap gap-2">
-            <input className="border px-2 py-1 rounded flex-1" placeholder="Creator address" value={creatorAddr} onChange={(e) => setCreatorAddr(e.target.value)} />
-            <button
-              className="rounded bg-green-600 text-white px-3 py-1 disabled:opacity-50"
-              disabled={!address || !walletClient || !publicClient || !forwarder || !creatorAddr}
-              onClick={async () => {
-                try {
-                  if (!publicClient || !walletClient || !address || !forwarder || !chainId) throw new Error('Missing deps')
-                  const feeWei = feeInput ? parseEther(feeInput || '0') : BigInt(0)
-                  const { request, domain, types } = await buildFollowForwardRequest({
-                    account: address as `0x${string}`,
-                    creator: creatorAddr as `0x${string}`,
-                    follower: address as `0x${string}`,
-                    hubAddress: hub.address,
-                    hubAbi: creatorFollowerHubAbi as any,
-                    forwarder: forwarder as `0x${string}`,
-                    chainId,
-                    publicClient,
-                    feeWei,
-                  })
-                  const signature = await walletClient.signTypedData({
-                    account: address as `0x${string}`,
-                    domain,
-                    types: types as any,
-                    primaryType: 'ForwardRequest',
-                    message: request,
-                  })
-                  const res = await fetch('/api/creator/follow', {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' },
-                    body: JSON.stringify({
-                      request: {
-                        ...request,
-                        value: request.value.toString(),
-                        gas: request.gas.toString(),
-                        nonce: request.nonce.toString(),
-                      },
-                      signature,
-                    }),
-                  })
-                  if (!res.ok) throw new Error(await res.text())
-                  const json = await res.json()
-                  setToast(json?.ok ? 'Follow minted (relayed)' : 'Follow failed')
-                } catch (e) {
-                  console.error(e)
-                  setToast(e instanceof Error ? e.message : 'Follow failed')
-                }
-              }}
-            >
-              Follow (gasless)
-            </button>
+          <div className="space-y-2">
+            <p className="font-semibold">Follow a creator (gasless)</p>
+            <div className="flex flex-wrap gap-2">
+              <input className="border px-2 py-1 rounded flex-1" placeholder="Creator address" value={creatorAddr} onChange={(e) => setCreatorAddr(e.target.value)} />
+              <button
+                className="rounded bg-green-600 text-white px-3 py-1 disabled:opacity-50"
+                disabled={!address || !walletClient || !publicClient || !forwarder || !creatorAddrValid || !(creatorConfigData as any)?.[3]}
+                onClick={async () => {
+                  try {
+                    if (!publicClient || !walletClient || !address || !forwarder || !chainId) throw new Error('Missing deps')
+                    const cfg = creatorConfigData as any
+                    if (!cfg || !cfg[3]) throw new Error('Creator has no config')
+                    const feeWei = cfg[0] as bigint
+                    const { request, domain, types } = await buildFollowForwardRequest({
+                      account: address as `0x${string}`,
+                      creator: creatorAddr as `0x${string}`,
+                      follower: address as `0x${string}`,
+                      hubAddress: hub.address,
+                      hubAbi: creatorFollowerHubAbi as any,
+                      forwarder: forwarder as `0x${string}`,
+                      chainId,
+                      publicClient,
+                      feeWei,
+                    })
+                    const signature = await walletClient.signTypedData({
+                      account: address as `0x${string}`,
+                      domain,
+                      types: types as any,
+                      primaryType: 'ForwardRequest',
+                      message: request,
+                    })
+                    const res = await fetch('/api/creator/follow', {
+                      method: 'POST',
+                      headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({
+                        request: {
+                          ...request,
+                          value: request.value.toString(),
+                          gas: request.gas.toString(),
+                          nonce: request.nonce.toString(),
+                        },
+                        signature,
+                      }),
+                    })
+                    if (!res.ok) throw new Error(await res.text())
+                    const json = await res.json()
+                    setToast(json?.ok ? 'Follow minted (relayed)' : 'Follow failed')
+                  } catch (e) {
+                    console.error(e)
+                    setToast(e instanceof Error ? e.message : 'Follow failed')
+                  }
+                }}
+              >
+                Follow (gasless)
+              </button>
+            </div>
+            <div className="rounded bg-white/5 p-2 text-xs text-white/80 space-y-1">
+              <p className="font-semibold">Creator config preview</p>
+              {creatorConfigData && (creatorConfigData as any)[3] ? (
+                <>
+                  <p>Fee: {formatEther((creatorConfigData as any)[0] as bigint)} ETH</p>
+                  <p>Policy: {(creatorConfigData as any)[1] === 1 ? 'SBT + Adult' : 'SBT only'}</p>
+                  <p className="break-all">Metadata URI: {(creatorConfigData as any)[2] || 'not set'}</p>
+                </>
+              ) : (
+                <p className="text-white/60">Enter a creator address to load their config.</p>
+              )}
+            </div>
+            <p className="text-xs text-white/70">Requires SBT. If policy is 1, follower must also be adult-verified.</p>
           </div>
-          <p className="text-xs text-white/70">Fees must be exact; policy 1 enforces adult verification on the follower.</p>
         </div>
       )}
-      {toast && <div className="text-xs text-blue-500">{toast}</div>}
+      {toast && <div className="text-xs text-blue-400">{toast}</div>}
     </div>
   )
 }
