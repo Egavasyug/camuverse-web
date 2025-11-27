@@ -103,12 +103,21 @@ function CreatorFollowerPanel({ hub }: { hub: Cfg }) {
         <div className="space-y-2">
           <p className="font-semibold">Set your config (creator only)</p>
           <div className="flex flex-wrap gap-2">
-            <input className="border px-2 py-1 rounded w-32" placeholder="Fee (ETH)" value={feeInput} onChange={(e) => setFeeInput(e.target.value)} />
-            <select className="border px-2 py-1 rounded" value={policyId} onChange={(e) => setPolicyId(Number(e.target.value))}>
+            <label className="text-xs text-white/70 flex flex-col gap-1">
+              <span>Mint fee (ETH)</span>
+              <input className="border px-2 py-1 rounded w-32" placeholder="0.00" value={feeInput} onChange={(e) => setFeeInput(e.target.value)} />
+            </label>
+            <label className="text-xs text-white/70 flex flex-col gap-1">
+              <span>Policy</span>
+              <select className="border px-2 py-1 rounded" value={policyId} onChange={(e) => setPolicyId(Number(e.target.value))}>
               <option value={0}>SBT gate</option>
               <option value={1}>SBT + Adult</option>
-            </select>
-            <input className="border px-2 py-1 rounded flex-1" placeholder="Metadata URI" value={uri} onChange={(e) => setUri(e.target.value)} />
+              </select>
+            </label>
+            <label className="text-xs text-white/70 flex-1 flex flex-col gap-1">
+              <span>Metadata URI (optional)</span>
+              <input className="border px-2 py-1 rounded flex-1" placeholder="ipfs://..." value={uri} onChange={(e) => setUri(e.target.value)} />
+            </label>
           </div>
           <button
             className="rounded bg-blue-600 text-white px-3 py-1 disabled:opacity-50"
