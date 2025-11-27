@@ -28,6 +28,7 @@ export function ConnectModalButton() {
   const wc = connectors.find(
     (c) => c.id === 'walletConnect' || c.name.toLowerCase().includes('walletconnect')
   )
+  const showWalletConnect = !!wc && isMobile
 
   function handleClick() {
     // Always show a clear choice; avoid automatic redirects
@@ -71,7 +72,7 @@ export function ConnectModalButton() {
                   Connect Coinbase Wallet
                 </button>
               )}
-              {wc && (
+              {showWalletConnect && (
                 <button
                   onClick={() => { connect({ connector: wc }); setOpen(false) }}
                   disabled={isPending}
